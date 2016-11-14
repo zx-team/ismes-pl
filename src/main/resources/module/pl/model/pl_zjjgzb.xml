@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 质检结果 -->
-<model version="1.0.3" name="pl_zjjgzb">
+<model version="1.0.4" name="pl_zjjgzb">
 	<fields>
 		<zjjgzbid type="pk" pk="true" required="false"  comment="质检结果ID" label="质检结果ID"/>
 		<ljid type="pk" required="false" comment="零件ID" label="零件ID"/>

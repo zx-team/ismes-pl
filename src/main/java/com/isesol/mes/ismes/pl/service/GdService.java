@@ -78,6 +78,9 @@ public class GdService {
 	}
 	public void queryGdxxByScph(Parameters parameters,Bundle bundle){
 		String param = " 1=1 ";
+		if(null != parameters.getString("query_lckbh") &&!"".equals(parameters.getString("query_lckbh"))){
+			param+=" and xh = '"+parameters.getString("query_lckbh")+"'";
+		}
 		if(null!=parameters.getString("scph")&&!"".equals(parameters.getString("scph"))){
 			param+=" and pcid = '"+parameters.getString("scph")+"'";
 		}
@@ -100,7 +103,7 @@ public class GdService {
 		Dataset dataset_gdxx = Sys.query("pl_gdb"," zzjgid, zjgkssj, jgkssj, fgdbh, ncbgsl, gdywcsl, gdybgsl, "
 				+ "gdid,  bfgf, czry, bflf, gdbh, jhjssj, gxzbs, gdztdm, sbid, dyzt, jgwcsj, kgzt, jgsl, "
 				+ "ljid, tssyx, jhkssj, xh, jgjp, gxmc, pcid, gxzxh, gdwcsj, gxid, gdscsj ", 
-				param, null, new Object[]{});
+				param, "gdscsj desc", new Object[]{});
 		bundle.put("gdxx",  dataset_gdxx.getList());
 	}
 }
