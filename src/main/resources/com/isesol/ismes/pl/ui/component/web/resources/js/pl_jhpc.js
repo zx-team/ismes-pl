@@ -187,6 +187,8 @@ angular.module('angularGanttDemoApp')
             		calculateQuantity(task.row.model, task.model);
             		if (task.model.isNew) {
             			task.model.gxid = task.row.model.gxid;
+            			task.model.gxzxh = task.row.model.gxzxh;
+            			task.model.gxzbs = task.row.model.gxzbs;
                     	ui.warn('请修改新建工单的箱号');
             		}
             		var currentDeviceTask = $scope.editedTask.model;
@@ -400,7 +402,7 @@ angular.module('angularGanttDemoApp')
             daily: false,
             maxHeight: 610,
             zoom: 1,
-            tooltip:'<small>零件名称:  {{task.model.part}}<br/>批次编号:  {{task.model.pcbh}}<br/>箱         号:  {{task.model.xh}}<br/>工单编号:  {{task.model.gdbh}}<br/>工单状态:  {{task.model.gdztmc}}<br/>加工数量:  {{task.model.num}}<br/>开始时间:  {{task.model.from.format("MM-DD HH:mm")}}<br/>结束时间:  {{task.model.to.format("MM-DD HH:mm")}}</small>',
+            tooltip:'<small>零件名称:  {{task.model.part}}<br/>生产批号:  {{task.model.scph}}<br/>箱         号:  {{task.model.xh}}<br/>工单状态:  {{task.model.gdztmc}}<br/>加工数量:  {{task.model.num}}<br/>开始时间:  {{task.model.from.format("MM-DD HH:mm")}}<br/>结束时间:  {{task.model.to.format("MM-DD HH:mm")}}</small>',
             columnsContents:{'model.gx': '{{getValue()}}'},
             treeContent:'<input type="checkbox" ng-model="row.model.ck" ng-click="scope.checkCb(row.model.gxid, row.model.name, row.model.children, row.model.ck)"/>  {{row.model.label}} {{row.model.useRatio}}',
             treeTableColumns: ['model.gx'],
@@ -600,52 +602,39 @@ angular.module('angularGanttDemoApp')
         };
         
         $scope.checkCb = function(gxid, name, children, ck) {
-        	if(children !== undefined) {
-        		// 点击能力组
-        		for (var i=0; i<$scope.data.length; i++) {
-        			if ($scope.data[i].children === undefined) {
-        				// 设备
-        				for (var j=0; j < children.length; j++) {
-        					if ($scope.data[i].name == children[j] && gxid == $scope.data[i].gxid) {
-        						$scope.data[i].ck = ck;
-        					}
-        				}
-        			}
-        		}
-        	} else {
-        		// 点击设备
-        		var foundedChildren = [];
-        		var childrenCk = [];
-        		var index;
-        		// 一定是先找到该设备相应的能力组
-        		for (var i=0; i<$scope.data.length; i++) {
-        			if ($scope.data[i].children !== undefined) {
-        				if (foundedChildren.length != 0) {
-        					// 遍历到新的能力组，关心的能力组和能力组的设备已经处理过了，跳出循环
-        					break;
-        				}
-        				for (var j=0; j< $scope.data[i].children.length; j++) {
-        					if (name == $scope.data[i].children[j] && gxid == $scope.data[i].gxid) {
-        						// 匹配到能力组
-        						foundedChildren = $scope.data[i].children;
-        						index = i;
-        						break;
-        					}
-        				}
-        			} else {
-        				if (foundedChildren.length != 0) {
-        					// 匹配到能力组后，接着遍历的是该能立组下的所有设备
-        					childrenCk.push($scope.data[i].ck);
-        				}
-        			}
-        		}
-        		var result = childrenCk[0];
-        		for (var i=1; i < childrenCk.length; i++) {
-        			// 根据能力组下所有设备的状态决定能力组的状态
-        			result = result || childrenCk[i];
-        		}
-        		$scope.data[index].ck = result;
-        	}
+//    		// 点击设备
+//    		var foundedChildren = [];
+//    		var childrenCk = [];
+//    		var index;
+//    		// 一定是先找到该设备相应的能力组
+//    		for (var i=0; i<$scope.data.length; i++) {
+//    			if ($scope.data[i].children !== undefined) {
+//    				if (foundedChildren.length != 0) {
+//    					// 遍历到新的能力组，关心的能力组和能力组的设备已经处理过了，跳出循环
+//    					break;
+//    				}
+//    				for (var j=0; j< $scope.data[i].children.length; j++) {
+//    					if (name == $scope.data[i].children[j] && gxid == $scope.data[i].gxid) {
+//    						// 匹配到能力组
+//    						foundedChildren = $scope.data[i].children;
+//    						index = i;
+//    						break;
+//    					}
+//    				}
+//    			} else {
+//    				if (foundedChildren.length != 0) {
+//    					// 匹配到能力组后，接着遍历的是该能立组下的所有设备
+//    					childrenCk.push($scope.data[i].ck);
+//    				}
+//    			}
+//    		}
+//    		var result = childrenCk[0];
+//    		for (var i=1; i < childrenCk.length; i++) {
+//    			// 根据能力组下所有设备的状态决定能力组的状态
+//    			result = result || childrenCk[i];
+//    		}
+//    		$scope.data[index].ck = result;
+        		
         	// 根据都选框状态改变试排按钮文字
         	if (ck) {
         		ui.button("trySchedule").attr("label",'试排选中');
@@ -857,6 +846,41 @@ angular.module('angularGanttDemoApp')
              );
         };
         
+        $scope.adjust = function() {
+        	if ($scope.data === undefined) {
+        		return '';
+        	}
+    		 var sbids = '';
+    		 var temp = {};
+	       	 // 得到选中的设备
+	       	 for (var i = 0; i < $scope.data.length; i++) {
+	       		 if (!$scope.data[i].drawTask) {
+	       			 // 略过能力组
+	       			 continue;
+	       		 }
+	       		 if ($scope.data[i].ck) {
+	       			 if (temp[$scope.data[i].sbid] === undefined) {
+	       				 // 过滤掉不同工序的相同设备
+	       				temp[$scope.data[i].sbid] = 1;
+	       				sbids += "," + $scope.data[i].sbid;
+	       			 }
+	       		 }
+	       	 }
+	       	 if (sbids != '') {
+	       		sbids = sbids.substring(1);
+	       	 }
+	       	 if (sbids == '') {
+	       		 ui.warn('请选择需要调整的加工单元');
+	       		 return;
+	       	 }
+	       	 if (sbids.split(",").length > 6) {
+	       		ui.warn('一次最多只能对6个加工单元进行对比调整');
+	       		 return;
+	       	 }
+	       	//ui.hidden("adjustSbids").val(sbids);
+	       	location.href="initAdjustScrw?pcid=" + ui.hidden('pcid').val() + "&jgdyids=" + sbids + "&pcjhksrq=" + ui.hidden('pcjhksrq').val();
+        }
+        
         $scope.save = function(type) {
         	// 准备提交的数据
         	savings = {};
@@ -865,6 +889,7 @@ angular.module('angularGanttDemoApp')
         	savings["ljid"] = ui.hidden('ljid').val();
         	savings["ljmc"] = ui.hidden('ljmc').val();
         	savings["ljbh"] = ui.hidden('ljbh').val();
+        	savings["zxsl"] = $scope.per;
         	savings["type"] = type;
         	savings["gd"] = [];
         	
@@ -920,8 +945,8 @@ angular.module('angularGanttDemoApp')
         						return;
         					}
         					var xh = tasks[j].xh;
-        					var gxzxh = $scope.data[i].gxzxh;
-        					var gxzbs = $scope.data[i].gxzbs;
+        					var gxzxh = tasks[j].gxzxh;
+        					var gxzbs = tasks[j].gxzbs;
         					var sbid =  $scope.data[i].sbid;
         					var jgsj =  $scope.data[i].jgsj;
         					var zzjgid = $scope.data[i].zzjgid;

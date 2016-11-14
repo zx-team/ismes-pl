@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="tzjgdyrw" title="调整加工单元生产任务" onReady="viewReady">
+	<hidden name="jgdyids" bind="jgdyids" />
+	<hidden name="pcid" bind="pcid" />
+	<hidden name="pcjhksrq" bind="pcjhksrq" />
+	<bunch name="0" hidden="true">
+		<normal-actions>
+			<button name="releaseBtnA" icon="icon-Add_to" label="发布"  type="button" onClick="releaseBtnClickA"></button>
+		</normal-actions>
+		<table name="a" showrownum="false" scroll="false" pagesize="200" showpager="false" 
+			editurl="" autoload="false" multiselect="false" url="scrwTable">
+			<column label="加工单元" name="jgdymc" />
+			<column label="工单id" name="gdid" key="true" hidden="true" />
+			<column label="生产批号" name="scph" />
+			<column label="图号" name="th" />
+			<column label="炉号" name="lh" />
+			<column label="计划加工数量" name="jhjgsl" type="number" />
+			<column label="开始时间" name="jgksrq"  type="datetime" />
+			<column label="完成时间" name="jgwcrq"  type="datetime" />
+			<column label="生产任务状态" name="scrwzt" />
+			<column label="生产任务状态代码" name="scrwztdm" hidden="true" />
+			<column label="工序组" name="gxzmc" />
+			<column label="原顺序号" name="ysxh" />
+			<column label="操作" type="operation">
+				<attribute name="formatoptions"><![CDATA[
+						[
+							{
+								name:"up",
+								icon:"icon-edit",
+								label:"上移",
+								click:goUp,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							},
+							{
+								name:"down",
+								icon:"icon-edit",
+								label:"下移",
+								click:goDown,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							}
+						]
+					]]></attribute>
+			</column>
+		</table>
+	</bunch>
+	<bunch name="1" hidden="true">
+		<normal-actions>
+			<button name="releaseBtnB" icon="icon-Add_to" label="发布"  type="button" onClick="releaseBtnClickB"></button>
+		</normal-actions>
+		<table name="b" showrownum="false" scroll="false" editurl="" pagesize="200" showpager="false" 
+			autoload="false" multiselect="false" url="scrwTable">
+			<column label="加工单元" name="jgdymc" />
+			<column label="工单id" name="gdid" key="true" hidden="true" />
+			<column label="生产批号" name="scph" />
+			<column label="图号" name="th" />
+			<column label="炉号" name="lh" />
+			<column label="计划加工数量" name="jhjgsl" type="number" />
+			<column label="开始时间" name="jgksrq"  type="datetime" />
+			<column label="完成时间" name="jgwcrq"  type="datetime" />
+			<column label="生产任务状态" name="scrwzt" />
+			<column label="生产任务状态代码" name="scrwztdm" hidden="true" />
+			<column label="工序组" name="gxzmc" />
+			<column label="原顺序号" name="ysxh" />
+			<column label="操作" type="operation">
+				<attribute name="formatoptions"><![CDATA[
+						[
+							{
+								name:"up",
+								icon:"icon-edit",
+								label:"上移",
+								click:goUp
+							},
+							{
+								name:"down",
+								icon:"icon-edit",
+								label:"下移",
+								click:goDown
+							}
+							
+						]
+					]]></attribute>
+			</column>
+		</table>
+	</bunch>
+	<bunch name="2" hidden="true">
+		<normal-actions>
+			<button name="releaseBtnC" icon="icon-Add_to" label="发布"  type="button" onClick="releaseBtnClickC"></button>
+		</normal-actions>
+		<table name="c" showrownum="false" scroll="false" editurl="" pagesize="200" showpager="false" 
+			autoload="false" multiselect="false" url="scrwTable">
+			<column label="加工单元" name="jgdymc" />
+			<column label="工单id" name="gdid" key="true" hidden="true" />
+			<column label="生产批号" name="scph" />
+			<column label="图号" name="th" />
+			<column label="炉号" name="lh" />
+			<column label="计划加工数量" name="jhjgsl" type="number" />
+			<column label="开始时间" name="jgksrq" type="datetime"/>
+			<column label="完成时间" name="jgwcrq" type="datetime"/>
+			<column label="生产任务状态" name="scrwzt" />
+			<column label="生产任务状态代码" name="scrwztdm" hidden="true" />
+			<column label="工序组" name="gxzmc" />
+			<column label="原顺序号" name="ysxh" />
+			<column label="操作" type="operation">
+				<attribute name="formatoptions"><![CDATA[
+						[
+							{
+								name:"up",
+								icon:"icon-edit",
+								label:"上移",
+								click:goUp,
+								visible:function(rowid,rowdata) {
+									alert(rowdata.scrwztdm);
+									return rowdata.scrwztdm != 15;
+								}
+							},
+							{
+								name:"down",
+								icon:"icon-edit",
+								label:"下移",
+								click:goDown,
+								visible:function(rowid,rowdata) {
+								return rowdata.scrwztdm != 15;
+							}
+							}
+							
+						]
+					]]></attribute>
+			</column>
+		</table>
+	</bunch>
+	<bunch name="4" hidden="true">
+		<normal-actions>
+			<button name="releaseBtnD" icon="icon-Add_to" label="发布"  type="button" onClick="releaseBtnClickD"></button>
+		</normal-actions>
+		<table name="d" showrownum="false" scroll="false" pagesize="200" showpager="false" 
+			editurl="" autoload="false" multiselect="false" url="scrwTable">
+			<column label="加工单元" name="jgdymc" />
+			<column label="工单id" name="gdid" key="true" hidden="true" />
+			<column label="生产批号" name="scph" />
+			<column label="图号" name="th" />
+			<column label="炉号" name="lh" />
+			<column label="计划加工数量" name="jhjgsl" type="number" />
+			<column label="开始时间" name="jgksrq"  type="datetime" />
+			<column label="完成时间" name="jgwcrq"  type="datetime" />
+			<column label="生产任务状态" name="scrwzt" />
+			<column label="生产任务状态代码" name="scrwztdm" hidden="true" />
+			<column label="工序组" name="gxzmc" />
+			<column label="原顺序号" name="ysxh" />
+			<column label="操作" type="operation">
+				<attribute name="formatoptions"><![CDATA[
+						[
+							{
+								name:"up",
+								icon:"icon-edit",
+								label:"上移",
+								click:goUp,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							},
+							{
+								name:"down",
+								icon:"icon-edit",
+								label:"下移",
+								click:goDown,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							}
+						]
+					]]></attribute>
+			</column>
+		</table>
+	</bunch>
+	<bunch name="5" hidden="true">
+		<normal-actions>
+			<button name="releaseBtnE" icon="icon-Add_to" label="发布"  type="button" onClick="releaseBtnClickE"></button>
+		</normal-actions>
+		<table name="e" showrownum="false" scroll="false" pagesize="200" showpager="false" 
+			editurl="" autoload="false" multiselect="false" url="scrwTable">
+			<column label="加工单元" name="jgdymc" />
+			<column label="工单id" name="gdid" key="true" hidden="true" />
+			<column label="生产批号" name="scph" />
+			<column label="图号" name="th" />
+			<column label="炉号" name="lh" />
+			<column label="计划加工数量" name="jhjgsl" type="number" />
+			<column label="开始时间" name="jgksrq"  type="datetime" />
+			<column label="完成时间" name="jgwcrq"  type="datetime" />
+			<column label="生产任务状态" name="scrwzt" />
+			<column label="生产任务状态代码" name="scrwztdm" hidden="true" />
+			<column label="工序组" name="gxzmc" />
+			<column label="原顺序号" name="ysxh" />
+			<column label="操作" type="operation">
+				<attribute name="formatoptions"><![CDATA[
+						[
+							{
+								name:"up",
+								icon:"icon-edit",
+								label:"上移",
+								click:goUp,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							},
+							{
+								name:"down",
+								icon:"icon-edit",
+								label:"下移",
+								click:goDown,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							}
+						]
+					]]></attribute>
+			</column>
+		</table>
+	</bunch>
+	<bunch name="5" hidden="true">
+		<normal-actions>
+			<button name="releaseBtnF" icon="icon-Add_to" label="发布"  type="button" onClick="releaseBtnClickF"></button>
+		</normal-actions>
+		<table name="f" showrownum="false" scroll="false" pagesize="200" showpager="false" 
+			editurl="" autoload="false" multiselect="false" url="scrwTable">
+			<column label="加工单元" name="jgdymc" />
+			<column label="工单id" name="gdid" key="true" hidden="true" />
+			<column label="生产批号" name="scph" />
+			<column label="图号" name="th" />
+			<column label="炉号" name="lh" />
+			<column label="计划加工数量" name="jhjgsl" type="number" />
+			<column label="开始时间" name="jgksrq"  type="datetime" />
+			<column label="完成时间" name="jgwcrq"  type="datetime" />
+			<column label="生产任务状态" name="scrwzt" />
+			<column label="生产任务状态代码" name="scrwztdm" hidden="true" />
+			<column label="工序组" name="gxzmc" />
+			<column label="原顺序号" name="ysxh" />
+			<column label="操作" type="operation">
+				<attribute name="formatoptions"><![CDATA[
+						[
+							{
+								name:"up",
+								icon:"icon-edit",
+								label:"上移",
+								click:goUp,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							},
+							{
+								name:"down",
+								icon:"icon-edit",
+								label:"下移",
+								click:goDown,
+								visible:function(rowid,rowdata) {
+									return rowdata.scrwztdm < 15;
+								}
+							}
+						]
+					]]></attribute>
+			</column>
+		</table>
+	</bunch>
+	<bunch layoutconstraint="md:2;sm:2;md-offset:5;sm-offset:5">
+		<button name="backBtn" label="返回"  type="button" context="primary" onClick="backBtnClick"></button>
+	</bunch>
+	<attribute name="javascript">
+	<![CDATA[
+		var tableNames = ["a", "b", "c", "d", "e", "f"];
+		function viewReady() {
+			var jgdyids = ui.hidden("jgdyids").val().split(",");
+			for (var i = 0; i < jgdyids.length; i++) {
+				ui.bunch(i).show();
+				ui.table(tableNames[i]).search({jgdyid:jgdyids[i], pcjhksrq:ui.hidden("pcjhksrq").val()});
+			}
+		}
+		function backBtnClick() {
+			window.location.href=ui.getUrl("/pl/jhpc/listSchedule?pcid=" + ui.hidden('pcid').val());
+		}
+		function goUp(name,rowid,table) {
+		 	var ljid = table.getCell(rowid,"ljid");
+		 	// TODO 获取父表格中的加工状态
+		 	var jgzt = 10;
+		 	// 校验是否满足排产条件
+			$.ajax({
+	             type: "GET",
+	             url:   '../jhpc/checkPc',
+	             async: false,
+	             data: {ljid : ljid, jgzt : jgzt},
+	             success: function(data){
+	             	if (data.error !== undefined) {
+	             		ui.error(data.error);
+	             	} else {
+	             		// 跳转到计划排产页面
+						location.href = ui.getRealUrl("../jhpc/listSchedule?pcid="+rowid);
+	             	}
+	             }
+	         });
+		}
+		function goDown(name,rowid,table) {
+		 	var ljid = table.getCell(rowid,"ljid");
+		 	// TODO 获取父表格中的加工状态
+		 	var jgzt = 10;
+		 	// 校验是否满足排产条件
+			$.ajax({
+	             type: "GET",
+	             url:   '../jhpc/checkPc',
+	             async: false,
+	             data: {ljid : ljid, jgzt : jgzt},
+	             success: function(data){
+	             	if (data.error !== undefined) {
+	             		ui.error(data.error);
+	             	} else {
+	             		// 跳转到计划排产页面
+						location.href = ui.getRealUrl("../jhpc/listSchedule?pcid="+rowid);
+	             	}
+	             }
+	         });
+		}
+		
+		function releaseBtnClickA() {
+			releaseBtnClick(0);
+		}
+		function releaseBtnClickB() {
+			releaseBtnClick(1);
+		}
+		function releaseBtnClickC() {
+			releaseBtnClick(2);
+		}
+		function releaseBtnClickD() {
+			releaseBtnClick(3);
+		}
+		function releaseBtnClickE() {
+			releaseBtnClick(4);
+		}
+		function releaseBtnClickF() {
+			releaseBtnClick(5);
+		}
+		function releaseBtnClick(num) {
+			var jgdyid = ui.hidden("jgdyids").val().split(",")[num];
+			$.ajax({
+	             type: "GET",
+	             url:   'releaseTable',
+	             async: false,
+	             data: {jgdyid : jgdyid, pcjhksrq : ui.hidden("pcjhksrq").val()},
+	             success: function(data){
+	             	if (data.error !== undefined) {
+	             		ui.error(data.error);
+	             	} else {
+	             		ui.success("发布成功");
+	             		ui.table(tableNames[num]).reload();
+	             	}
+	             }
+	         });
+		}
+	]]>
+	</attribute>
+</view>

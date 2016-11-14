@@ -32,6 +32,36 @@
 				<gantt-button type="button" ng-click="hideTaskModal('cancel')" label="取消"></gantt-button>
 			</modal-footer>
 		</modal>
+		<modal name="modifyWorkOrderModal" heading="调整加工单元生产任务" sizing="large" show="false" keyboard="false">
+			<modal-body>
+				<form name="modal-form" action="modal-form" method="post" horizontal="true">
+					<form-body>
+						<form-group>
+							<label for="jgksrq" text="加工开始时间" layoutconstraint="md:3"/>
+							<gantt-date name="jgksrq" placeholder="开始日期" ng-model="editedTask.model.from"  ng-blur="checkTaskOnModal('from')" layoutconstraint="md:5;sm:5;"/>
+							<gantt-time name="jgkssj" ng-model="editedTask.model.from" ng-blur="checkTaskOnModal('from')" layoutconstraint="md:3;sm:3;"/>
+						</form-group>
+						<form-group>
+							<label for="jgjsrq" text="加工完成时间" layoutconstraint="md:3"/>
+							<gantt-date name="jgjsrq" placeholder="完成日期" ng-model="editedTask.model.to" ng-blur="checkTaskOnModal('to')" layoutconstraint="md:5;sm:5;"/>
+							<gantt-time name="jgjssj" ng-model="editedTask.model.to" ng-blur="checkTaskOnModal('to')" layoutconstraint="md:3;sm:3;"/>
+						</form-group>
+						<form-group>
+							<label for="xh" text="箱      号" layoutconstraint="md:3"/>
+							<gantt-text name="xh" ng-model="editedTask.model.xh" placeholder="请输入箱号" readonly="false" validate="{required:true}" layoutconstraint="md:8"/>
+						</form-group>
+						<form-group>
+							<label for="jgsl" text="加工数量" layoutconstraint="md:3"/>
+							<gantt-number name="jgsl" ng-model="editedTask.model.num" placeholder="请输入加工数量" readonly="false" format="###,###.00" validate="{required:true,digits:true}" layoutconstraint="md:8"/>
+						</form-group>
+					</form-body>
+				</form>
+			</modal-body>
+			<modal-footer>
+				<gantt-button type="button" ng-click="hideTaskModal('confirm')" label="确认"></gantt-button>
+				<gantt-button type="button" ng-click="hideTaskModal('cancel')" label="取消"></gantt-button>
+			</modal-footer>
+		</modal>
 		<gantt-panel heading="显示选项" layoutconstraint="md:12;">
 			<gantt-panel-body>
 				<form name="display-form" action="display-opt" method="post" horizontal="true">
@@ -79,6 +109,7 @@
 		</gantt-panel>
 		<panel layoutconstraint="md:12;">
 			<panel-body>
+				<hidden name="adjustSbids" ></hidden>
 				<hidden name="pcid" bind="pcxx.pcid"></hidden>
 				<hidden name="ljid" bind="pcxx.ljid"></hidden>
 				<hidden name="ljmc" bind="pcxx.ljmc"></hidden>
@@ -214,7 +245,7 @@
 				<panel-body>
 					<gantt-button name="back" label="返回" type="button" context="primary" layoutconstraint="md:1;sm:1;md-offset:4" ng-click="goBack()"></gantt-button>		
 					<gantt-button name="saveSchedule" label="保存" type="button" context="primary" layoutconstraint="md:1;sm:1;" ng-click="save('save')"></gantt-button>
-					<gantt-button name="releaseSchedule" label="发布" type="button" context="primary" layoutconstraint="md:1;sm:1;" ng-click="save('release')"></gantt-button>		
+					<gantt-button name="adjustJgdy" label="调整加工单元任务" type="button" context="primary" layoutconstraint="md:2;sm:2;" ng-click="adjust()"></gantt-button>		
 				</panel-body>
 			</panel>
 	</gantt-app>

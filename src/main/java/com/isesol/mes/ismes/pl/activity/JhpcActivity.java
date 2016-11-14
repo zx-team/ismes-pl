@@ -41,6 +41,213 @@ public class JhpcActivity {
 	private final String 已保存 = "10";
 	private final String 已发布 = "15";
 	
+	public String initAdjustScrw(Parameters parameters, Bundle bundle) {
+		String jgdyids = parameters.getString("jgdyids");
+		String pcid = parameters.getString("pcid");
+		String pcjhksrq = parameters.getString("pcjhksrq");
+		bundle.put("jgdyids", jgdyids);
+		bundle.put("pcid", pcid);
+		bundle.put("pcjhksrq", pcjhksrq);
+		return "tzjgdyrw";
+	}
+	
+	public String scrwTable(Parameters parameters, Bundle bundle) throws ParseException {
+		bundle.put("rows", getTableContent(parameters));
+		return "json:";
+	}
+	
+	public String releaseTable(Parameters parameters, Bundle bundle) throws ParseException {
+		List<Map<String, Object>> rows = getTableContent(parameters);
+		if (rows.isEmpty()) {
+			return "json:";
+		}
+		for (Map<String, Object> row : rows) {
+			if (Integer.parseInt(String.valueOf(row.get("scrwztdm"))) >= Integer.parseInt(已发布)) {
+				// 不处理已发布及以后流程状态的小生产任务
+				continue;
+			}
+			Map<String, Object> updated = Maps.newHashMap();
+			updated.put("gdztdm", 已发布);
+			// 更改小任务状态
+			Sys.update("pl_gdpcb", updated, "gdid=?", row.get("gdid"));
+			// 生成工艺流程卡表中的数据
+			insertGdb(row);
+			if (this.isHxGd(String.valueOf(row.get("jgdyid")), String.valueOf(row.get("ljid")), (Date) row.get("jgksrq"))) {
+				this.insertHxtz(String.valueOf(row.get("ljid")), String.valueOf(row.get("jgdyid")), String.valueOf(row.get("gxzid")), (Date) row.get("jgksrq"));
+			}
+		}
+		return "json:";
+	}
+	
+	/**
+	 * 根据箱号的表达式还原箱号
+	 * @param scph 生产批号
+	 * @param xhPattern
+	 * @return
+	 */
+	private static Map<Integer, List<String>> restoreXhs(String scph, String xhPattern) {
+		Map<Integer, List<String>> slXhs = Maps.newHashMap();
+		for (String pattern : xhPattern.split(";")) {
+			int sl = Integer.parseInt(pattern.substring(1, pattern.indexOf(")")));
+			List<String> xhs = slXhs.get(sl);
+			if (xhs == null) {
+				xhs = Lists.newArrayList();
+				slXhs.put(sl, xhs);
+			}
+			String subPattern = pattern.substring(pattern.indexOf(")") + 1);
+			for (String s : subPattern.split(",")) {
+				if (s.indexOf("-") != -1) {
+					// 范围
+					for (int i = Integer.parseInt(s.split("-")[0]); i <= Integer.parseInt(s.split("-")[1]); i++) {
+						xhs.add(scph + "-" + StringUtils.leftPad(i + "", 2, "0"));
+					}
+				} else {
+					xhs.add(scph + "-" + StringUtils.leftPad(s + "", 2, "0"));
+				}
+			}
+		}
+		return slXhs;
+	}
+	
+	private void insertGdb(Map<String, Object> row) {
+		// 计算箱号信息
+		String xhPattern = String.valueOf(row.get("xh"));
+		Map<Integer, List<String>> slXhs = restoreXhs(String.valueOf(row.get("scph")), xhPattern);
+		
+		for (Entry<Integer, List<String>> entry : slXhs.entrySet()) {
+			int jgsl = entry.getKey();
+			List<String> xhs = entry.getValue();
+			for (String xh : xhs) {
+				Map<String, Object> gdData = new HashMap<String, Object>();
+				gdData.put("gdbh", row.get("gdid"));
+				gdData.put("jgjp", row.get("jgjp"));
+				gdData.put("pcid", row.get("pcid"));// 批次ID
+				gdData.put("ljid", row.get("ljid"));// 零件ID
+				gdData.put("gxid", row.get("gxzid"));// 工序ID
+				gdData.put("sbid", row.get("jgdyid"));// 设备ID
+				gdData.put("xh", xh);    // 箱号
+				gdData.put("jgsl", jgsl);// 加工数量
+				gdData.put("gxzxh", row.get("gxzxh"));    // 工序组序号
+				gdData.put("gxzbs", row.get("gxzbs"));    // 工序组标识
+				gdData.put("gdztdm", 已发布);
+				gdData.put("gdscsj", new Date()); // 工单生成时间
+				gdData.put("jhkssj", row.get("jgksrq"));// 计划开始时间
+				gdData.put("jhjssj", row.get("jgwcrq"));// 计划结束时间
+				gdData.put("gdywcsl", 0); // 报完工数量
+				gdData.put("ncbgsl", 0); // NC自动报工数量
+				gdData.put("gdybgsl", 0); // 工人报工数量
+				gdData.put("czry", Sys.getUserIdentifier()); // 操作人员
+				gdData.put("dyzt", "10"); // 打印状态 未打印
+				gdData.put("zzjgid", row.get("zzjgid")); // 组织机构ID
+				gdData.put("bfgf", "0"); // 打印状态 未打印
+				gdData.put("bflf", "0"); // 组织机构ID
+				// 父工单编号
+				gdData.put("fgdbh", "");
+				// 判断是否为换线工单
+				Sys.insert("pl_gdb", gdData);
+				this.insertScrwzbqd(String.valueOf(gdData.get("gdid")), (Date) row.get("jgksrq"), 0, String.valueOf(row.get("gxzid")), jgsl);
+			}
+		}
+	}
+	
+	private List<Map<String, Object>> getTableContent(Parameters parameters) throws ParseException {
+		String jgdyid = parameters.getString("jgdyid");
+		String pcjhksrq = parameters.getString("pcjhksrq");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date kssj = sdf.parse(pcjhksrq);
+		Date date = new Date();
+		Date dateCondition = kssj.compareTo(date) <= 0 ? kssj : date;
+		String gdidSeqMapping = parameters.getString("gdidSeqMapping"); // 保存原序号的关系
+		Map<String, String> gdidSeqMap = null;
+		if (gdidSeqMapping != null) {
+			gdidSeqMap = Maps.newHashMap();
+			String[] temp = gdidSeqMapping.split(",");
+			for (int i = 0; i < temp.length; i++) {
+				gdidSeqMap.put(temp[i].split("-")[0], temp[i].split("-")[1]);
+			}
+		}
+		// 根据加工单元获取任务信息
+		Dataset dataset = Sys.query("pl_gdpcb", "gdid,ljid,gxid,jgsl,jhkssj,jhjssj,gdztdm,pcid,jgjp,xh,zxsl,gxzbs,gxzxh,zzjgid", "sbid = ? and jhkssj > ?", null, "jhkssj asc", new Object[] {jgdyid, dateCondition});
+		List<Map<String, Object>> retRows = Lists.newArrayList();
+		List<Map<String, Object>> rows = dataset.getList();
+		for (int i = 0; i < rows.size(); i++) {
+			Map<String, Object> row = rows.get(i);
+			Map<String, Object> retRow = Maps.newHashMap();
+			String gdid = String.valueOf(row.get("gdid")); // 工单id
+			String ljid = String.valueOf(row.get("ljid")); // 零件id
+			String gxid = String.valueOf(row.get("gxid")); // 工序组id
+			String jgsl = String.valueOf(row.get("jgsl")); // 加工数量
+			Date jhkssj = (Date)row.get("jhkssj"); // 计划开始时间
+			Date jhjssj = (Date)row.get("jhjssj"); // 计划结束时间
+			String scrwzt = getGdztmc(String.valueOf(row.get("gdztdm"))); // 工单状态代
+			String pcid = String.valueOf(row.get("pcid")); // 批次id
+			String jgjp = String.valueOf(row.get("jgjp"));
+			String xh = String.valueOf(row.get("xh"));
+			String zxsl = String.valueOf(row.get("zxsl"));
+			String gxzxh = String.valueOf(row.get("gxzxh"));
+			String gxzbs = String.valueOf(row.get("gxzbs"));
+			String zzjgid = String.valueOf(row.get("zzjgid"));
+			
+			// 取工单对应的生产任务信息
+			Parameters p1 = new Parameters();
+			p1.set("pcid", pcid);
+			Bundle b1 = Sys.callModuleService("pro", "proService_scrwInfoByPcid", p1);
+			Map<String, Object> scrwxx = (Map<String, Object>) b1.get("scrw");
+			
+			// 取加工单元信息
+			p1 = new Parameters();
+			p1.set("jgdyid", jgdyid);
+			b1 = Sys.callModuleService("em", "emservice_jgdyById", p1);
+			Map<String,Object> jgdyxx = (Map<String, Object>) b1.get("data");
+			
+			// 取零件信息
+			p1 = new Parameters();
+			p1.set("ljid", ljid);
+			b1 = Sys.callModuleService("pm", "partsInfoService", p1);
+			Map<String,Object> ljxx = (Map<String, Object>) b1.get("partsInfo");
+			
+			// 获取工序组信息
+			p1 = new Parameters();
+			p1.set("gxzid", gxid);
+			b1 = Sys.callModuleService("pm", "queryGxzxxByGxid_new", p1);
+			Map<String,Object> gxxx = (Map<String, Object>) b1.get("gxxx");
+			
+			// 对返回结果赋值
+			retRow.put("gdid", gdid);
+			retRow.put("jgdymc", jgdyxx.get("jgdymc"));
+			retRow.put("scph", scrwxx.get("scph"));
+			retRow.put("lh", scrwxx.get("mplh"));
+			retRow.put("th", ljxx.get("ljbh"));
+			retRow.put("jhjgsl", jgsl);
+			retRow.put("jgksrq", jhkssj);
+			retRow.put("jgwcrq", jhjssj);
+			retRow.put("gxzmc", gxxx.get("gxzmc"));
+			retRow.put("scrwzt", scrwzt);
+			retRow.put("scrwztdm", String.valueOf(row.get("gdztdm")));
+			retRow.put("ljid", ljid);
+			retRow.put("jgdyid", jgdyid);
+			retRow.put("gxzid", gxid);
+			retRow.put("jgjp", jgjp);
+			retRow.put("xh", xh);
+			retRow.put("zxsl", zxsl);
+			retRow.put("gxzxh", gxzxh);
+			retRow.put("gxzbs", gxzbs);
+			retRow.put("zzjgid", zzjgid);
+			retRow.put("pcid", pcid);
+			
+			// 通过零件id取零件信息
+			if (gdidSeqMapping != null) {
+				// 通过上移或者下移的按钮
+				retRow.put("ysxh", gdidSeqMap.get(gdid));
+			} else {
+				// 初始化查询
+				retRow.put("ysxh", i);
+			}
+			retRows.add(retRow);
+		}
+		return retRows;
+	}
+	
 	/**
 	 * 检查零件是否满足排产要求
 	 * @param parameters
@@ -117,10 +324,11 @@ public class JhpcActivity {
 		Map<String, Object> pcxx = ((List<Map<String, Object>>)b.get("pcxx")).get(0);
 		// 批次计划状态
 		int pczt = Integer.parseInt(String.valueOf(pcxx.get("pcjhztdm")));
+		String scph = String.valueOf(pcxx.get("pcmc"));
 		
 		// 工序组ID，加工单元ID关联关系
 		Map<String, List<DeviceUnavai>> sbMaintenance = Maps.newHashMap();
-		List<SimpleProcess> processes = getExistingData(ljid, ljmc, pcid, false, fromDate, toDate, sbMaintenance, jgzt);
+		List<SimpleProcess> processes = getExistingData(scph, ljid, ljmc, pcid, false, fromDate, toDate, sbMaintenance, jgzt);
 		JhpcConverter gc = new JhpcConverter(processes, gxsbids, scale);
 		List<Gantt> gantts = gc.get(pcid, pczt, ljid, ljmc, sbMaintenance, null);
 		bundle.put("result", gantts);
@@ -168,15 +376,16 @@ public class JhpcActivity {
 		int quantity = Integer.parseInt(parameters.getString("pcsl"));
 		// 工单最小单位数量
 		int min = 1;
-		// 工单最大单位数量
-		int max = 1;
-		// 单位数量
+		// 单位数量， 正祥的位装箱数量
 		int per = Integer.parseInt(parameters.getString("per"));
+		// 工单最大单位数量，正祥为批次数量/装箱数量 向上取整
+		int max = new Double(Math.ceil((double)quantity / per)).intValue();
+		
 		// 整单or流水
 		boolean whole = true;
 		
 		Map<String, List<DeviceUnavai>> sbMaintenance = Maps.newHashMap();
-		List<SimpleProcess> processes = getExistingData(ljid, ljmc, pcid, true, fromDate, toDate, sbMaintenance, jgzt);
+		List<SimpleProcess> processes = getExistingData(scph, ljid, ljmc, pcid, true, fromDate, toDate, sbMaintenance, jgzt);
 		Calendar from = Calendar.getInstance();
 		if (kssj.after(from)) {
 			// 如果计划开始时间要晚于当前时间的话，使用计划的开始时间作为排产的开始时间
@@ -209,7 +418,7 @@ public class JhpcActivity {
 			}
 			Collections.sort(workOrders);
 			WorkOrder last = workOrders.get(workOrders.size() - 1);
-			if (last.after(toDate.getTime())) {
+			if (last.completeAfter(toDate.getTime())) {
 				return false;
 			}
 		}
@@ -244,7 +453,7 @@ public class JhpcActivity {
 		return mc;
 	}
 	
-	private List<SimpleProcess> getExistingData(String ljid, String ljmc, String pcid, boolean trySchedule, Date fromDate, Date toDate, Map<String, List<DeviceUnavai>> sbUnavai, String jgzt) throws ParseException {
+	private List<SimpleProcess> getExistingData(String scph, String ljid, String ljmc, String pcid, boolean trySchedule, Date fromDate, Date toDate, Map<String, List<DeviceUnavai>> sbUnavai, String jgzt) throws ParseException {
 		
 		Calendar fromDay = Calendar.getInstance();
 		fromDay.setTime(fromDate);
@@ -310,7 +519,7 @@ public class JhpcActivity {
 							conditions = "sbid=? and jhkssj >= ? and jhjssj <= ?";
 							params = new Object[] { jgdyid, fromDay.getTime(), toDay.getTime() };
 						}
-						Dataset dataset = Sys.query("pl_gdb", "gdid,gdbh,jgsl,jhkssj,jhjssj,gxid,ljid,pcid,gdztdm,fgdbh,xh", conditions, null, params);
+						Dataset dataset = Sys.query("pl_gdpcb", "gdid,gdbh,jgsl,jhkssj,jhjssj,gxid,ljid,pcid,gdztdm,fgdbh,xh", conditions, null, params);
 						List<Map<String, Object>> workOrders = dataset.getList();
 						for (Map<String, Object> workOrder : workOrders) {
 							Calendar from = Calendar.getInstance();
@@ -322,6 +531,7 @@ public class JhpcActivity {
 							wo.setQuantity((Integer)workOrder.get("jgsl"));
 							wo.setPartId(String.valueOf(workOrder.get("ljid")));
 							wo.setPcid(String.valueOf(workOrder.get("pcid")));
+							wo.setScph(scph);
 							wo.setGdbh(String.valueOf(workOrder.get("gdbh")));
 							wo.setGdztdm(String.valueOf(workOrder.get("gdztdm")));
 							wo.setGdztmc(this.getGdztmc(String.valueOf(workOrder.get("gdztdm"))));
@@ -502,7 +712,7 @@ public class JhpcActivity {
 	 */
 	private void cleanGds(String pcid) {
 		// 获取该零件批次的所有保存的工单
-		Dataset existingDataset = Sys.query("pl_gdb", "gdid", "pcid=? and gdztdm=?", null, new Object[] { pcid, 已保存 });
+		Dataset existingDataset = Sys.query("pl_gdpcb", "gdid", "pcid=? and gdztdm=?", null, new Object[] { pcid, 已保存 });
 		List<String> deleteableGdids = Lists.newArrayList();
 		for (Map<String, Object> row : existingDataset.getList()) {
 			deleteableGdids.add(String.valueOf(row.get("gdid")));
@@ -512,7 +722,7 @@ public class JhpcActivity {
 		}
 		String inCondition = Joiner.on(",").join(deleteableGdids);
 		// 先清空同零件同批次的所有"已保存"的工单
-		Sys.delete("pl_gdb", "gdid in(" + inCondition + ")");
+		Sys.delete("pl_gdpcb", "gdid in(" + inCondition + ")");
 	}
 	
 	/**
@@ -540,6 +750,8 @@ public class JhpcActivity {
 		JSONArray gds = obj.getJSONArray("gd");
 		// 是保存还是发布
 		String type = obj.getString("type");
+		// 装箱数量
+		String zxsl = obj.getString("zxsl");
 		
 		Parameters p2 = new Parameters();
 		p2.set("ljid", ljid);
@@ -598,14 +810,14 @@ public class JhpcActivity {
 			gdData.put("zzjgid", zzjgid); // 组织机构ID
 			gdData.put("bfgf", "0"); // 打印状态 未打印
 			gdData.put("bflf", "0"); // 组织机构ID
-			
+			gdData.put("zxsl", zxsl); // 装箱数量
 			
 			// 父工单编号
 			String fgdbh = gd.getString("fgdbh");
 			if (fgdbh != null && !"".equals(fgdbh) && !"null".equals(fgdbh)) {
 				gdData.put("fgdbh", fgdbh);
 			}
-			Sys.insert("pl_gdb", gdData);
+			Sys.insert("pl_gdpcb", gdData);
 			if ("release".equals(type)) {
 				if ("yes".equals(hxgd))
 				{
@@ -702,11 +914,11 @@ public class JhpcActivity {
 	{
 		Object[] params = new Object[]{ jgdyid, jhkssj };
 		// 找到这个工单开始时间前的第一条工单数据的零件ID
-		Dataset dataset = Sys.query("pl_gdb", "ljid", "sbid= ? and jhjssj < ?", null, 0, 1, params);
+		Dataset dataset = Sys.query("pl_gdpcb", "ljid", "sbid= ? and jhjssj < ?", null, 0, 1, params);
 		List<Map<String, Object>> rows = dataset.getList();
 		if (rows.size() == 0) {
 			// 该工单为这个加工单元在系统内的第一个工单
-			return false;
+			return true;
 		}
 		return !ljid.equals(String.valueOf(rows.get(0).get("ljid")));
 	}
