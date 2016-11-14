@@ -1,0 +1,2 @@
+ui.$runtime.getComponentName()("$runtime.getAttribute("name")")#literal().init#end({});
+#bindEvents()

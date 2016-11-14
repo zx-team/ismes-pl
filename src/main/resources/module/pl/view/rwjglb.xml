@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="rwjglb" title="生产排程">
+	<table name="table-jgrw" showrownum="false" scroll="false" minheight="430"
+		editurl="" multiselect="false" url="taskBatchLevelOneTable">
+		<column label="任务id" name="scrwid" key="true" hidden = "true"/>
+		<column label="生产任务编号" name="scrwbh" hidden = "true"/>
+		<column label="生产批号" name="scph" />
+		<column label="零件id" name="ljid" hidden = "true"/>
+		<column label="加工状态" name="jgzt" hidden = "true"/>
+		<column label="零件名称" name="ljmc"/>
+		<column label="任务数量" name="jgsl" type="number"/>
+		<column label="任务计划开始日期" name="jgksrq" type="date" sortable="true" />
+		<column label="任务计划完成日期" name="jgwcrq" type="date" sortable="true"/>
+		<column label="生产任务状态" name="scrwztdm"/>
+		
+		<subtable showrownum="false" scroll="false" showpager="false" 
+			editurl="" multiselect="false" url="taskBatchLevelTwoTable">
+			<column label="批次id" name="scrwpcid" key="true" hidden = "true"/>
+			<column label="零件id" name="ljid" hidden = "true"/>
+			<column label="批次编号" name="pcbh" hidden = "true"/>
+			<column label="批次名称" name="pcmc"/>
+			<column label="批次数量" name="pcsl"/>
+			<column label="批次计划开始日期" name="pcjhksrq" type="date" sortable="true"/>
+			<column label="批次计划结束日期" name="pcjhwcrq" type="date" sortable="true"/>
+			<column label="批次计划状态" name="pcjhztdm" type="dict" dictionary="PCJH"/>
+			<column label="操作" type="operation">
+			<attribute name="formatoptions"><![CDATA[
+					[
+						{
+							name:"plan",
+							icon:"icon-making-plan",
+							label:"制作计划",
+							click:plan,
+							visible:function(rowid,rowdata) {
+								return rowdata.pcjhztdm == '20';
+							}
+						},
+						{
+							name:"plan",
+							icon:"icon-adjustment",
+							label:"调整计划",
+							click:plan,
+							visible:function(rowid,rowdata) {
+								return rowdata.pcjhztdm == '30';
+							}
+						}
+						,
+						{
+							name:"plan",
+							icon:"icon-detailed",
+							label:"查看计划",
+							click:plan,
+							visible:function(rowid,rowdata) {
+								return parseInt(rowdata.pcjhztdm) >= '40';
+							}
+						}
+					]
+				]]></attribute>
+			</column>
+		</subtable>
+	</table>
+	<attribute name="javascript">
+	<![CDATA[
+		function plan(name,rowid,table) {
+		 	var ljid = table.getCell(rowid,"ljid");
+		 	var pcid = table.getCell(rowid,"scrwpcid");;
+		 	// 校验是否满足排产条件
+			$.ajax({
+	             type: "GET",
+	             url:   '../jhpc/checkPc',
+	             async: false,
+	             data: {ljid : ljid, pcid : pcid},
+	             success: function(data){
+	             	if (data.error !== undefined) {
+	             		ui.error(data.error);
+	             	} else {
+	             		// 跳转到计划排产页面
+						location.href = ui.getRealUrl("../jhpc/listSchedule?pcid="+rowid);
+	             	}
+	             }
+	         });
+		}
+	]]>
+	</attribute>
+</view>

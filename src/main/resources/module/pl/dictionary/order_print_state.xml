@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category name="DYZT" label="工单打印状态代码">
+	<field value="10" label="未打印"/>
+	<field value="20" label="已打印"/>
+</category>

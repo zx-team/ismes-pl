@@ -1,0 +1,7 @@
+#if($runtime.getLayoutConstraint().size()>0)
+<div class="bunch #printExtAttr("classes")">
+#end
+#if($runtime.getAttribute("label"))
+<label#printAttr("name","for") class="control-label">#message("label")</label>
+#end
+<select#printAttr("name","id")#printAttr("name","name")#printAttr("ng-model","ng-model")#if(!$runtime.getAttribute("multiple")) class="form-control select select-primary select-block mbl"#end#if($runtime.getAttribute("multiple")) multiple="multiple" class="form-control multiselect multiselect-info"#end#printAttrMessage("placeholder","placeholder")#printStr("readonly","readonly")#printStr("disabled","disabled")#printAttr("validate","data-validate")>

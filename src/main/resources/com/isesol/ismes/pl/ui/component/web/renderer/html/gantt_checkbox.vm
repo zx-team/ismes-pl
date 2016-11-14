@@ -1,0 +1,19 @@
+
+#set($checked =$runtime.getAttribute("checked"))
+#if($runtime.getAttribute("bind"))
+#set($bind = $ui.getBindValue($runtime.getAttribute("bind")))
+#if(!$null.isNull($bind))
+#set($checked = false)
+#foreach($v in $bind)
+#if($v == $runtime.getAttribute("value"))
+#set($checked = true)
+#end
+#end
+#end
+#end
+<div class="bunch #printExtAttr("classes")">
+<label for="$runtime.getAttribute("name")">
+	<input#printAttr("name","id")#printAttr("name","name")#printAttr("ng-click","ng-click")#printAttr("ng-model","ng-model") type="checkbox" value="#escAttr("value")" class="icheck"#if($checked) checked#end#printStr("readonly","readonly")#printStr("disabled","disabled")#printAttr("validate","data-validate")>
+	#message("label")
+</label>
+</div>

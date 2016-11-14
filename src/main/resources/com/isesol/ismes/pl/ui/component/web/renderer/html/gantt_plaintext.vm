@@ -1,0 +1,13 @@
+
+#set($value =$runtime.getAttribute("text"))
+#if($runtime.getAttribute("bind"))
+#set($bind = $ui.getBindValue($runtime.getAttribute("bind")))
+#if(!$null.isNull($bind))
+#set($value = $bind)
+#end
+#end
+#set($type = $runtime.getAttribute("type"))
+#if(!$runtime.getAttribute("type"))
+#set($type = "span")
+#end
+<$type#printAttr("name","id") #printAttr("ng-bind","ng-bind") class="#printStr("lead","lead")#printAlign("text")#printContext("text")#printExtAttr("classes")">#if($runtime.getAttribute("format"))#if($runtime.getAttribute("format").indexOf("#")>-1)$num.format($runtime.getAttribute("format"),$value)#else$date.format($runtime.getAttribute("format"),$value)#end#else#message($value,true)#end</$type>

@@ -1,0 +1,8 @@
+
+#if($runtime.getAttribute("footer"))
+	<div class="panel-footer">$runtime.getAttribute("footer")</div>
+#end
+</div>
+
+#if($runtime.getLayoutConstraint().size()>0)</div>#end
+

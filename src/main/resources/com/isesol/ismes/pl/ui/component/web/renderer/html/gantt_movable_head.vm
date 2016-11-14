@@ -1,0 +1,1 @@
+<gantt-movable enabled="$runtime.getAttribute("enabled")" allow-row-switching="$runtime.getAttribute("allow-row-switching")">

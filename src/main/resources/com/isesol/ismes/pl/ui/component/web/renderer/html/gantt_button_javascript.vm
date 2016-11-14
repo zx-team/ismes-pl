@@ -1,0 +1,2 @@
+#if($runtime.getAttribute("tooltip"))$('#$runtime.getAttribute("name")').tooltip();#end
+#bindEvents()

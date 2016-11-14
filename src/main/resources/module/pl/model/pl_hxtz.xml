@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 换线通知 -->
+<model version="1.0.0" name="pl_hxtz">
+	<fields>
+		<hxtzid type="pk" pk="true" required="true" maxlength="25" comment="换线通知ID" label="换线通知ID"/>
+		<ljid type="string" required="false" maxlength="25" comment="零件ID" label="零件ID"/>
+		<gxzid type="string" required="false" maxlength="25" comment="工序组ID" label="工序组ID"/>
+		<jgdyid type="string" required="false" maxlength="25" comment="加工单元ID" label="加工单元ID"/>
+		<hxsj type="timestamp" required="false" comment="换线时间" label="换线时间"/>
+	</fields>
+</model>
+	
+	
+	
+
+
+

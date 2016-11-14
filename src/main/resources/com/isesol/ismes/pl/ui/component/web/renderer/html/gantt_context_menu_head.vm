@@ -1,0 +1,4 @@
+<div class="size">
+	<ul class="list" id="contextMenu">
+		<li ng-repeat='x in $runtime.getAttribute("menuOptions")' ng-click="handleMenuClick(x.value)">{{x.label}}</li>
+	

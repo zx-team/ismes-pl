@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 巡检信息表 -->
+<model version="1.0.1" name="pl_jgdyxjxx">
+	<fields>
+		<xjxxid type="pk"  pk="true" required="false" maxlength="25" comment="加工信息ID" label="加工信息ID"/>
+		<jgdyid type="pk" required="false" comment="加工单元ID" label="加工单元ID"/>
+		<xjkssj type="timestamp" required="false" comment="巡检开始时间" label="巡检开始时间"/>
+		<xjjzsj type="timestamp" required="false" comment="巡检截至时间" label="巡检截至时间"/>
+		<xjsj type="timestamp" required="false" comment="巡检时间" label="巡检时间"/>
+		<zjry type="string" required="false" maxlength="10" comment="自检人员" label="自检人员"/>
+		<zjzt type="string" required="false" maxlength="10" comment="自检状态" label="自检状态"/>
+		<xjry type="string" required="false" maxlength="10" comment="巡检人员" label="巡检人员"/>
+		<xjzt type="string" required="false" maxlength="10" comment="巡检状态" label="巡检状态"/>
+	</fields>
+</model>

@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="gdyl" title="流程卡下发与打印" onReady="testViewReady">
+	<hidden name="ljid" bind="scrwandpc.ljid"/>
+	<hidden name="scrwpcid" bind="scrwandpc.scrwpcid"/>
+	<hidden name="scrwid" bind="scrwandpc.scrwid"/>
+	<hidden name="sjwlkcid" bind="scrwandpc.sjwlkcid"/>
+	<hidden name="scrwbh" bind="scrwandpc.scrwbh"/>
+	
+	<hidden name="pro_ljmc" bind="partsInfo.ljmc"/>
+	<hidden name="pro_ljbh" bind="partsInfo.ljbh"/>
+	<hidden name="pro_wlgg" bind="scrwandpc.wlgg"/>
+	<hidden name="pro_lh"   bind="scrwandpc.mplh"/>
+	<hidden name="pro_scph" bind="scrwandpc.scph"/>
+
+	<panel layoutconstraint="md:12;">
+		<panel-body>
+			<bunch layoutconstraint="md:12">
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="产品名称：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="partsInfo.ljmc" layoutconstraint="md:0.5;sm:0.5;"/>
+				</bunch>
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="图号：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="partsInfo.ljbh" layoutconstraint="md:0.5;sm:0.5;" />
+				</bunch>
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="材料：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="scrwandpc.wlgg" layoutconstraint="md:0.5;sm:0.5;" />
+				</bunch>
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="炉号：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="scrwandpc.mplh" layoutconstraint="md:0.5;sm:0.5;" />				
+				</bunch>		
+			</bunch>
+			<bunch layoutconstraint="md:12">
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="生产批号：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="scrwandpc.scph" layoutconstraint="md:0.5;sm:0.5;"/>
+				</bunch>
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="批次计划数量：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="scrwandpc.pcsl" layoutconstraint="md:0.5;sm:0.5;" />
+				</bunch>
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="批次计划开始时间：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="scrwandpc.pcjhksrq" layoutconstraint="md:0.5;sm:0.5;" format="YYYY-MM-dd"/>
+				</bunch>
+				<bunch layoutconstraint="md:3">
+					<plaintext  text="批次计划完成时间：" layoutconstraint="md:0.5;sm:0.5;" />
+					<plaintext  bind="scrwandpc.pcjhwcrq" layoutconstraint="md:0.5;sm:0.5;" format="YYYY-MM-dd"/>				
+				</bunch>
+			</bunch>
+		</panel-body>
+	</panel>
+	<panel layoutconstraint="md:12;">
+		<panel-body>
+			<table name="table-gdyl" showrownum="false" scroll="false" minheight="430"
+				editurl="" multiselect="true" url="" showpager="false" pagesize = "200">
+				<attribute name="url"><![CDATA[getGdxxByPcid?ljid=${scrwandpc.ljid}&scrwpcid=${scrwandpc.scrwpcid}]]></attribute>
+				<column label="工序id" name="gxid" key="true" hidden = "true"/>
+				<column label="工单id" name="gdid" key="true" hidden = "true"/>
+				<column label="工艺流程卡编号" name="xh"/>
+				<column label="计划加工数量" name="jgsl"/>
+				<column label="流程卡下发标识" name="gdztdm" type="dict" dictionary="GDZT"/>
+				<column label="打印标识" name="dyzt" type="dict" dictionary="DYZT"/>
+				<table-actions>
+					<button name="xfgdBtn" label="下发" onClick="_xfgd"	tooltip="下发工单"></button>
+					<button name="backBtn" label="打印" onClick="_dygylck" tooltip="打印工艺流程卡"></button>
+					<button name="designBtn" label="设计" onClick="designgylck" tooltip="设计工艺流程卡"></button>
+				</table-actions> 
+			</table>
+			</panel-body>
+	</panel>
+	<modal name="cjscgdModal" heading="车间生产工单" sizing="large" show="false" keyboard="true" >
+		<modal-body>
+			<bunch>
+				<bunch layoutconstraint="md:12">
+					<bunch layoutconstraint="md:8">
+						<bunch layoutconstraint="md:12">
+							<plaintext  text="零件图号:"  layoutconstraint="md:2;sm:2"/><plaintext  bind="partsInfo.ljbh"  layoutconstraint="md:4;sm:4"/>
+							<plaintext  text="零件名称:"  layoutconstraint="md:2;sm:2"/><plaintext  bind="partsInfo.ljmc"  layoutconstraint="md:4;sm:4"/>
+						</bunch>
+						<bunch layoutconstraint="md:12">
+							<plaintext  text="工序编号:"  layoutconstraint="md:2;sm:2"/><plaintext name = "cjgd_gxbh"  layoutconstraint="md:4;sm:4"/>
+							<plaintext  text="批次编号:"  layoutconstraint="md:2;sm:2"/><plaintext  bind="scrwandpc.pcbh"  layoutconstraint="md:4;sm:4"/>
+						</bunch>
+					</bunch>
+					<bunch layoutconstraint="md:4">
+						<image shape="thumbnail" name="image_gd" popshow="true" ></image>
+					</bunch>
+				</bunch>
+				
+				<bunch layoutconstraint="md:12">			
+					<table  name="table_gbxx"  url="/gdyl/table_cjscgd"  showpager="true" layoutconstraint="md:12;sm:12;">
+						<column label="工步号" name="gbid"></column>
+						<column label="加工过程描述" name="jggcms"></column>
+						<column label="刀具名称" name="wlmc"></column>
+						<column label="刀具规格" name="wlgg"></column>
+					</table>
+				</bunch>
+				<bunch layoutconstraint="md:12">
+					<plaintext  text="加工数量：" layoutconstraint="md:2;sm:2;" /><plaintext  name="cjgd_jgsl" layoutconstraint="md:2;sm:2;"/>
+					<plaintext  text="设备编号：" layoutconstraint="md:2;sm:2;" /><plaintext  name="cjgd_sbbh" layoutconstraint="md:2;sm:2;" />
+					<plaintext  text="程序名称：" layoutconstraint="md:2;sm:2;" /><plaintext  name="cjgd_cxmc" layoutconstraint="md:2;sm:2;" />
+				</bunch>
+				<bunch layoutconstraint="md:12">
+					<plaintext  text="计划开始时间：" layoutconstraint="md:2;sm:2;"/><plaintext  name="cjgd_jgkssj" layoutconstraint="md:2;sm:2;"/>
+					<plaintext  text="计划结束时间：" layoutconstraint="md:2;sm:2;" /><plaintext  name="cjgd_jgwcsj" layoutconstraint="md:2;sm:2;" />
+				</bunch>
+			</bunch>
+		</modal-body>
+		<!-- <modal-footer>
+				<button name="printModalClick" label="打印" type="button" context="primary"  onClick="printModalClick"></button>
+				<button name="xfBtnClick" label="下发" type="button" context="primary"  onClick="xfBtnWindow"></button>
+				<button name="closeqyeryModalClick" label="取消" type="button" context="primary"  onClick="closeQueryWindow"></button>
+		</modal-footer> -->
+	</modal>
+	<modal name="sczbqdModal" heading="生产准备清单" sizing="large" show="false" keyboard="true" >
+		<modal-body>
+			<bunch>
+				<bunch layoutconstraint="md:2">
+					<image shape="thumbnail" name="image_lj"  src="${partsInfo.url}" width="120" height="80" layoutconstraint="md:4;sm:4">
+					</image>
+				</bunch>
+				<bunch layoutconstraint="md:10">
+					<bunch layoutconstraint="md:12">
+						<plaintext  text="零件图号："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_ljbh"  bind="partsInfo.ljbh"  layoutconstraint="md:2;sm:2"/>
+						<plaintext  text="零件名称："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_ljmc" bind="partsInfo.ljmc"  layoutconstraint="md:2;sm:2"/>
+						<plaintext  text="加工数量："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_jgsl"  layoutconstraint="md:2;sm:2"/>
+					</bunch>			
+					<bunch layoutconstraint="md:12">
+						<plaintext  text="批次编号："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_pcbh" bind="scrwandpc.pcbh" layoutconstraint="md:4;sm:4"/>
+						<plaintext  text="工单编号："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_gdbh"  layoutconstraint="md:4;sm:4"/>
+					</bunch>			
+					<bunch layoutconstraint="md:12">
+						<plaintext  text="设备编号："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_sbbh"  bind="sbxx.sbbh" layoutconstraint="md:4;sm:4"/>
+						<plaintext  text="应到时间："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_ydwsj"  layoutconstraint="md:4;sm:4"/>
+					</bunch>			
+					<bunch layoutconstraint="md:12">
+						<plaintext  text="加工开始："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_jgkssj"  layoutconstraint="md:4;sm:4"/>
+						<plaintext  text="加工结束："  layoutconstraint="md:2;sm:2"/><plaintext  name="zbqd_jgjssj"  layoutconstraint="md:4;sm:4"/>
+					</bunch>
+				</bunch>
+				<bunch layoutconstraint="md:12">
+					<table name="table_cxzb" scroll="false"  url="/gdyl/table_cxzb" caption="程序准备" showpager="false">
+						<column label="名称(自定义)" name="cxmc"></column>
+						<column label="程序ID" name="cxid" key="true" hidden="true"></column>
+						<column label="名称(系统)" name="cxmczd"></column>
+						<column label="程序版本" name="cxbb"></column>
+						<column label="程序类别" name="cxlx"  type="dict" dictionary="CXLB" ></column>
+					</table>
+				</bunch>
+				<bunch layoutconstraint="md:12">
+					<table name="table_wlzb" scroll="false"  url="/gdyl/table_wlzb"  caption="物料准备" showpager="false">
+						<column label="物料编号" name="wlbh"></column>
+						<column label="库存ID" name="sbid" key="true" hidden="true"></column>
+						<column label="物料名称" name="wlmc" ></column>
+						<column label="库房名称" name="kfmc" ></column>
+						<column label="库存数量" name="kcsl" ></column>
+						<column label="计量单位" name="wldwdm"  type="dict" dictionary="JLDW"></column>
+					</table>
+				</bunch>
+				<bunch layoutconstraint="md:12">
+					<table name="table_djzb" scroll="false" url="/gdyl/table_djzb?wllb=('10')"  caption="刀具准备" showpager="false">
+						<column label="刀具名称" name="wlmc"></column>
+						<column label="物料ID" name="sbid" key="true" hidden="true"></column>
+						<column label="刀具规格" name="wlgg" ></column>
+						<column label="需求数量" name="zbsl" ></column>
+						<column label="已装备数量" name="yzbsl" ></column>
+						<column label="库存数量" name="kcsl" ></column>
+						<column label="计量单位" name="wldw" type="dict" dictionary="JLDW" ></column>
+					</table>
+				</bunch>
+				<bunch layoutconstraint="md:12">
+					<table name="table_jjzb" scroll="false" url="/gdyl/table_djzb?wllb=('20')"   caption="夹具准备" showpager="false">
+						<column label="夹具名称" name="wlmc"></column>
+						<column label="物料ID" name="sbid" key="true" hidden="true"></column>
+						<column label="夹具规格" name="wlgg" ></column>
+						<column label="需求数量" name="zbsl" ></column>
+						<column label="已装备数量" name="yzbsl" ></column>
+						<column label="库存数量" name="kcsl" ></column>
+						<column label="计量单位"  name="wldw" type="dict" dictionary="JLDW"  ></column>
+					</table>
+				</bunch>
+				<bunch layoutconstraint="md:12">
+					<table name="table_ljzb" scroll="false" url="/gdyl/table_djzb?wllb=('30')"   caption="量具准备" showpager="false">
+						<column label="物料ID" name="wlid" key="true" hidden="true"></column>
+						<column label="量具类型" name="wlmc"></column>
+						<column label="量具规格" name="wlgg" ></column>
+						<column label="需求数量" name="zbsl" ></column>
+						<column label="已装备数量" name="yzbsl" ></column>
+						<column label="库存数量" name="kcsl" ></column>
+						<column label="计量单位"  name="wldw" type="dict" dictionary="JLDW"  ></column>
+					</table>
+				</bunch>
+			</bunch>
+		</modal-body>
+		<!-- <modal-footer>
+				<button name="printzbqdModalClick" label="打印" type="button" context="primary"  onClick="printModalClick"></button>
+				<button name="xfBtnClick1" label="下发" type="button" context="primary"  onClick="xfBtnWindow"></button>
+				<button name="closezbqdModalClick" label="取消" type="button" context="primary"  onClick="closeQdWindow"></button>
+		</modal-footer> -->
+	</modal>
+	<modal name="myModal" heading="物料不足" sizing="middle" show="false" keyboard="true">
+		<modal-body>
+			<table name="wlbzxx" scroll="true" height="300"
+				multiselect="false" pagesize = "200">
+				<column label="物料名称" name="xh"/>
+				<column label="缺少数量" name="jgsl"/>
+				<column label="物料单位" name="gdztdm"/>
+			</table>
+		</modal-body>
+		<modal-footer>				
+			<button label="关闭窗口" type="button" name="closeModal"
+				onClick="closeWlbz"></button>
+		</modal-footer>
+	</modal>
+	<hidden name="xfgdid" />
+	<print name="test"></print>
+	<attribute name="javascript">
+	<![CDATA[
+		function testViewReady(){
+			//load_table_func();
+		}
+		function load_table_func(){
+			var ljid = ui.hidden("ljid").val();
+			var scrwpcid =  ui.hidden("scrwpcid").val();
+			ui.table("table-gdyl").search(
+				{ljid:ljid,scrwpcid:scrwpcid}
+			);
+		}
+		function backBtnClick() {
+			window.location.href=ui.getRealUrl("/taskbatch/batchPlanIndex");
+		}
+		function action_formater_func(value,rowData,row){
+			var showName = "";
+			var gdid = row.gdid;
+			var rowId =  rowData.rowId;
+			var gxid = row.gxid;
+			if(row.gdztdm == '10'){
+				showName = "<a  href='javascript:void(0);' class = 'xiafa'  data-gdid ='" + gdid + "' data-rowId ='"+ rowId +"' data-gxid='"+gxid+"' >下发</a>"
+			}else if(value){
+				showName = value;
+			}
+			return showName;
+		}
+		
+		function produceprepare_formater_func(name, rowid){
+			
+		}
+		
+		function dataFormat_func(value,rowData,row){
+			if(!value){
+				return '';
+			}
+			var time = new Date(value);
+			var yyyy = time.getFullYear();
+			var MM = time.getMonth() + 1;
+			var dd = time.getDate();
+			return yyyy + "/" + MM + "/" + dd;
+		}
+		
+		
+		
+		$("#table-gdyl").delegate(".xiafa","click",function(){
+			var gdid = $(this).attr("data-gdid");
+			var rowId = $(this).attr("data-rowId");
+			var gxid = $(this).attr("data-gxid"); 
+			$.ajax({
+		             type: "POST",
+		             url:   ui.getRealUrl("xfgdOne"),
+		             async: false,
+		             data: {gdid : gdid },
+		             success: function(data){
+		             	var actionShow = " ";
+		             	ui.table("table-gdyl").getSubtable(gxid).setCell(rowId,"action",actionShow);
+		             	
+		             	var gdztShow = "已下发";
+		             	ui.table("table-gdyl").getSubtable(gxid).setCell(rowId,"gdztdm",gdztShow);
+		             }
+		         });
+		});
+		$("#table-gdyl").delegate(".chakan","click",function(){
+			ui.alert("查看生产准备 ，，工单id ===" + $(this).attr("data-gdid") );
+		});
+		
+		function _xfgd(){
+			var rows= ui.table("table-gdyl").getSelectedRows();
+			if(rows.length < 1) {
+				ui.warn("请选中一条记录!", "提示!");
+				return;
+			}
+			var gdids = "";
+			for(var i = 0 ; i < rows.length ;i++){
+				var rowData = ui.table("table-gdyl").getRow(rows[i]);
+				gdids = gdids + rowData.gdid;
+				if( i != (rows.length -1)){
+					gdids += ","
+				}
+			}
+			
+			var xhs = "";
+			for(var i = 0 ; i < rows.length ;i++){
+				var rowData = ui.table("table-gdyl").getRow(rows[i]);
+				var gdzt = rowData.gdztdm;
+				if(gdzt == 20){
+					ui.error('含有已下下发工单,请重新选择');
+					return;
+				}
+				xhs = xhs + "'" + rowData.xh + "'";
+				if( i != (rows.length -1)){
+					xhs += ","
+				}
+			}
+			var pcid = ui.hidden("scrwpcid").val();
+			$.ajax({
+	             type: "POST",
+	             url:   ui.getRealUrl("xfgd"),
+	             async: false,
+	             data: {gdids : gdids, xhs : xhs, pcid : pcid},
+	             success: function(data){
+	             	if(data.data== 'success'){
+	             		ui.success("工单下发成功！");	
+	             	} else {
+	             		$('#wlbzxx tbody').empty();
+	             		for(var i = 0, len = data.data.length; i < len; i++){
+	             			var obj = data.data[i];
+	             			var _dw = obj.wldwdm;
+	             			var dw = "";
+	             			if(_dw == 10){
+	             				dw = "件（个）"
+	             			} else if(_dw == 20){
+	             				dw = "米"
+	             			} else if(_dw == 30){
+	             				dw = "公斤"
+	             			} else if(_dw == 40){
+	             				dw = "吨"
+	             			}
+	             			var trHTML = "<tr>";
+	             			trHTML += "<td>" + obj.wlmc + "</td>"
+	             			trHTML += "<td>" + obj.total + "</td>"
+	             			trHTML += "<td>" + dw + "</td>"
+	             			trHTML += "</tr>";
+	             			$("#wlbzxx").append(trHTML);
+	             		}
+	             		ui.modal("myModal").show();
+	             		ui.error("物料不足,工单下发失败！");
+	             	}
+	             	ui.table("table-gdyl").reload();             	
+	             },
+	             error : function(){
+	             	ui.error("工单下发失败！");
+	             }
+	         });
+		}
+		
+		function _dygylck(){
+		
+			var rows= ui.table("table-gdyl").getSelectedRows();
+			if(rows.length < 1) {
+				ui.warn("请选中一条记录!", "提示!");
+				return;
+			}
+			var xhs = "";
+			var xh_arr = [];
+			for(var i = 0 ; i < rows.length ;i++){
+				var rowData = ui.table("table-gdyl").getRow(rows[i]);
+				xh_arr.push(rowData.xh);
+				xhs = xhs + rowData.xh;
+				if( i != (rows.length -1)){
+					xhs += ","
+				}
+			}
+			
+			var bh = ui.hidden("scrwbh").val();
+			var mc = ui.hidden("pro_ljmc").val();
+			var th = ui.hidden("pro_ljbh").val();
+			var cl = ui.hidden("pro_wlgg").val();
+			var lh = ui.hidden("pro_lh").val();
+			var ph = ui.hidden("pro_scph").val();
+			
+			var LODOP = ui.print();
+
+			for(var i = 0 ; i < rows.length ;i++){
+				LODOP.PRINT_INIT("工艺流程卡打印");
+				initData(xh_arr[i],mc,th,cl,lh,ph);
+				LODOP.PRINT();
+			}
+			$.ajax({
+	             type: "POST",
+	             url:   ui.getRealUrl("/gdyl/dygylck"),
+	             async: false,
+	             data: {xhs:xhs, mc:mc, th:th, cl:cl, lh:lh, ph:ph, bh:bh},
+	             success: function(data){
+	             	ui.table("table-gdyl").reload();
+					ui.success('打印成功');
+	             }
+	         });
+//			window.open(ui.getUrl("/pl/gdyl/dygylck")+"?xhs="+xhs+"&mc="+mc+"&th="+th+"&cl="+cl+"&lh="+lh+"&ph="+ph+"&bh="+bh,"_blank");
+		}
+		
+		var str = "";
+		function designgylck(){
+			initData('1234567890','测试名称','测试图号','测试材料','测试炉号','测试批号');
+			if (LODOP.CVERSION) LODOP.On_Return = function(TaskID, value) {
+        		str = value;
+    		}
+	    	LODOP.PRINT_DESIGN(); 
+		}
+		
+		function initData(bh,mc,th,cl,lh,ph){
+			
+			var _host = window.location.host;
+			if(str != ""){
+				var temp = str;
+				temp = temp.replace('1234567890',bh);
+				temp = temp.replace('1234567890',bh);
+				temp = temp.replace('测试名称',mc);
+				temp = temp.replace("测试图号",th);
+				temp = temp.replace("测试材料",cl);
+				temp = temp.replace("测试炉号",lh);
+				temp = temp.replace("测试批号",ph);
+				eval(temp);
+			} else {
+				LODOP.PRINT_INITA(0,0,412,688,"");
+				LODOP.ADD_PRINT_SETUP_BKIMG("<img src='http://" + _host + "/ismes-web/file/download/pl/gdyl/getImage/1.png'>");
+				LODOP.SET_SHOW_MODE("BKIMG_IN_PREVIEW",true);
+				LODOP.ADD_PRINT_BARCODE(10,189,200,45,"128Auto",bh);
+				LODOP.ADD_PRINT_TEXT(153,81,130,20,mc);
+				LODOP.ADD_PRINT_TEXT(151,260,130,20,th);
+				LODOP.ADD_PRINT_TEXT(182,80,130,20,cl);
+				LODOP.ADD_PRINT_TEXT(182,260,130,20,lh);
+				LODOP.ADD_PRINT_TEXT(215,80,130,20,ph);
+				LODOP.ADD_PRINT_TEXT(215,260,130,20,bh);
+				LODOP.SET_PRINT_PAGESIZE(1,1100,1820,"");
+			}
+		}
+		
+		function closeWlbz(){
+			ui.modal("myModal").hide();
+		}
+				
+		function xfgd_func(){
+			var rows= ui.table("table-gdyl").getSelectedRows();
+			if(rows.length < 1) {
+				ui.warn("请选中一条记录!", "提示!");
+				return;
+			}
+			var gxids = "";
+			var scrwpcid = ui.hidden("scrwpcid").val();
+			for(var i = 0 ; i < rows.length ;i++){
+				var rowData = ui.table("table-gdyl").getRow(rows[i]);
+				gxids = gxids + rowData.gxid +",";
+			}
+			$.ajax({
+	             type: "POST",
+	             url:   ui.getRealUrl("xfgdAll"),
+	             async: false,
+	             data: {pcid : scrwpcid, gxids : gxids,sbbh:$('#zbqd_sbbh').html(),ljbh:$('#zbqd_ljbh').html(),ljmc:$('#zbqd_ljmc').html()},
+	             success: function(data){
+	             	ui.success("工单下发成功！");
+	             },
+	             error : function(){
+	             	ui.error("工单下发失败！");
+	             }
+	         });
+	         
+		}
+		
+		function openCjgdWindow(name ,rowid ,table) {
+			var sbid = table.getCell(rowid,"sbid");
+			var gxid = table.getCell(rowid,"gxid");
+			var gdbh = table.getCell(rowid,"gdbh");
+			//$('#cjgd_gdbh').html(gdbh);
+			$('#cjgd_gxbh').html(ui.table("table-gdyl").getCell(table.getCell(rowid,"gxid"),"gxbh"));
+			$('#cjgd_jgsl').html(table.getCell(rowid,"jgsl"));
+			var jgkssj = table.getCell(rowid,"jhkssj");
+			var jgwcsj = table.getCell(rowid,"jhjssj");
+			if(table.getCell(rowid,"jhkssj") != null && table.getCell(rowid,"jhkssj") != ""){
+				$('#cjgd_jgkssj').html(moment(table.getCell(rowid,"jhkssj")).format("YYYY-MM-DD HH:mm:ss"));
+			}
+			if(table.getCell(rowid,"jhjssj") != null && table.getCell(rowid,"jhjssj") != ""){
+				$('#cjgd_jgwcsj').html(moment(table.getCell(rowid,"jhjssj")).format("YYYY-MM-DD HH:mm:ss"));
+			}
+			
+			$('#cjgd_sbbh').html(table.getCell(rowid,"sbxx.sbbh"));
+			ui.hidden("xfgdid").val(rowid);
+			ui.table("table_gbxx").search({gdid:rowid});
+			ui.image("image_gd").attr("src",ui.getRealUrl("/gdyl/pic_cjscgd?gdbh="+table.getCell(rowid,"gdbh")));
+			
+			$.ajax({
+	             type: "POST",
+	             url:  ui.getRealUrl("/gdyl/table_cxzbzxbz"),
+	             async: false,
+	             data: {gxid:gxid,sbid:sbid},
+	             success: function(data){
+	             	if(data != null){
+						$('#cjgd_cxmc').html(data.cxmczd);
+					}
+	             }
+		         });
+			
+			
+	    	ui.modal("cjscgdModal").show();
+	    	
+	    }
+		function openZbqdWindow(name ,rowid ,table) {
+			var jgkssj = table.getCell(rowid,"jhkssj");
+			var jgwcsj = table.getCell(rowid,"jhjssj");
+			var sbid = table.getCell(rowid,"sbid");
+			var sbbh = table.getCell(rowid,"sbxx.sbbh");
+			var sblxid = table.getCell(rowid,"sbxx.sblxid");
+			var gxid = table.getCell(rowid,"gxid");
+			var ydwsj = table.getCell(rowid,"ydwsj");
+			var gdbh = table.getCell(rowid,"gdbh");
+			$('#zbqd_gdbh').html(gdbh);
+			$('#zbqd_jgsl').html(table.getCell(rowid,"jgsl"));
+			$('#zbqd_ydwsj').html(moment(ydwsj.value).format("YYYY-MM-DD HH:mm:ss"));
+			$('#zbqd_jgkssj').html(moment(jgkssj).format("YYYY-MM-DD HH:mm:ss"));
+			$('#zbqd_jgjssj').html(moment(jgwcsj).format("YYYY-MM-DD HH:mm:ss"));
+			$('#zbqd_sbbh').html(sbbh);
+			ui.hidden("xfgdid").val(rowid);
+			ui.table("table_djzb").search({gdid:rowid,sbid:sbid});
+			ui.table("table_jjzb").search({gdid:rowid,sbid:sbid});
+			ui.table("table_ljzb").search({gdid:rowid,sbid:sbid});
+			ui.table("table_cxzb").search({gxid:gxid,sbid:sbid});
+			ui.table("table_wlzb").search({gdid:rowid,sbid:sbid});
+			//ui.table("table_sbzb").addRow(sbid,{sbid: sbid,sblx:sblxid,sbbh:sbbh ,jgkssj:jgkssj,jgwcsj:jgwcsj},"first");
+	    	ui.modal("sczbqdModal").show();      
+	    }
+		
+	    function closeQueryWindow() {
+	    	ui.modal("cjscgdModal").hide();
+	    }
+	    function openQdWindow() {
+	    	ui.modal("sczbqdModal").show();
+	    }
+	    function closeQdWindow() {
+	    	ui.modal("sczbqdModal").hide();
+	    }
+	    function printModalClick() {
+	    //打印
+	    }
+	    function editBtnClick() {
+	    }
+	    function del_cxgl() {
+	    }
+	    function download_cxxx() {
+	    }
+	    
+		function xfBtnWindow(){
+			$.ajax({
+	             type: "POST",
+	             url:  ui.getRealUrl("/gdyl/update_xfgd"),
+	             async: false,
+	             data: {xfgdid : ui.hidden("xfgdid").val(),pcid:ui.hidden("scrwpcid").val(),sbbh:$('#zbqd_sbbh').html(),ljbh:$('#zbqd_ljbh').html(),ljmc:$('#zbqd_ljmc').html()},
+	             success: function(data){
+	             	ui.table("table-gdyl").reload();
+	             	closeQueryWindow();
+	             	ui.success("工单下发成功！");
+	             },
+	             error : function(){
+	             	ui.error("工单下发失败！");
+	             }
+		     });
+		}
+		function dgxfBtnWindow(name,rowid ,table){
+			
+			$.ajax({
+	             type: "POST",
+	             url:  ui.getRealUrl("/gdyl/update_xfgd"),
+	             async: false,
+	             data: {xfgdid :rowid,pcid:table.getCell(rowid,"pcid"),jgsl:table.getCell(rowid,"jgsl"),sbbh:table.getCell(rowid,"sbxx.sbbh"),gdbh:table.getCell(rowid,"gdbh"),ljbh:$('#zbqd_ljbh').html(),ljmc:$('#zbqd_ljmc').html()},
+	             success: function(data){
+	             	ui.table("table-gdyl").reload();
+	             	//closeQueryWindow();
+	             	ui.success("工单下发成功！");
+	             },
+	             error : function(){
+	             	ui.error("工单下发失败！");
+	             }
+		      });
+		}
+	]]>
+	</attribute>
+</view>

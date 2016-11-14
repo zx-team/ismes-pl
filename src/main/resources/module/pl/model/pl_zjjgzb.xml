@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 质检结果 -->
+<model version="1.0.3" name="pl_zjjgzb">
+	<fields>
+		<zjjgzbid type="pk" pk="true" required="false"  comment="质检结果ID" label="质检结果ID"/>
+		<ljid type="pk" required="false" comment="零件ID" label="零件ID"/>
+		<gxzid type="pk" required="false" comment="工序组ID" label="工序组ID"/>
+		<jgdyid type="pk" required="false"  comment="加工单元ID" label="加工单元ID"/>
+		<scrwid type="pk" required="false"  comment="生产任务ID" label="生产任务ID"/>
+		<gdid type="pk" required="false"  comment="工单ID" label="工单ID"/>
+		<xh type="string" required="false" comment="箱号/流程卡号" label="箱号/流程卡号"/>
+		<jgry type="string" required="false" comment="加工人员ID" label="加工人员ID"/>
+		<zjry type="string" required="false" comment="质检人员ID" label="质检人员ID"/>
+		<zjsj type="timestamp" required="false" comment="质检时间" label="质检时间"/>
+		<zjbz type="string" required="false" comment="首末巡换标识" label="质检标识"/>
+		<sfzj type="string" required="false" comment="自检类型" label="是否自检"/>
+		<zjjg type="string" required="false" comment="质检结果" label="质检结果"/>
+	</fields>
+</model>
+	
+	
+	
+
+
+

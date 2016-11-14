@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 工单表 -->
+<model version="1.0.12" name="pl_gdb">
+
+	<fields>
+		<gdid type="pk"  pk="true" required="false" maxlength="25" comment="工单ID" label="工单ID"/>
+		<gdbh type="string" required="false" maxlength="200" comment="工单编号" label="工单编号"/>
+		<gxmc type="string" required="false" maxlength="200" comment="工序名称" label="工序名称"/>
+		<pcid type="pk" required="false" comment="批次ID" label="批次ID"/>
+		<ljid type="pk" required="false" comment="零件ID" label="零件ID"/>
+		<gxid type="pk" required="false"  comment="工序组ID" label="工序组ID"/>
+		<gxzxh type="string" required="false"  comment="工序组序号" label="工序组序号"/>
+		<gxzbs type="integer" required="false"  comment="-1 首序， 1尾序， 0其他" label="工序位置标识"/>
+		<jgsl type="integer" required="false" comment="计划加工数量" label="计划加工数量"/>
+		<jgkssj type="timestamp" required="false" comment="加工开始时间" label="加工开始时间"/><!-- 第一次报开工的时间 -->
+		<zjgkssj type="timestamp" required="false" comment="再加工开始时间" label="再加工开始时间"/><!-- 每次报开工更新时间 -->
+		<jgwcsj type="timestamp" required="false" comment="加工完成时间" label="加工完成时间"/><!-- 先放着 -->
+		<sbid type="pk" required="false" comment="加工单元ID" label="加工单元ID"/>
+		<gdztdm type="dict" required="false" comment="工单状态代码" label="工单状态代码"/>
+		<gdscsj type="timestamp" required="false" comment="工单生成时间" label="工单生成时间"/><!-- 老王那边的 -->
+		<gdwcsj type="timestamp" required="false" comment="工单完成时间" label="工单完成时间"/><!-- 先放着 -->
+		<jhkssj type="timestamp" required="false" comment="计划开始时间" label="计划开始时间"/>
+		<jhjssj type="timestamp" required="false" comment="计划结束时间" label="计划结束时间"/>
+		<gdybgsl type="integer" required="false" comment="工人报工数量" label="工人报工数量"/>
+		<ncbgsl type="integer" required="false" comment="NC自动报工数量" label="NC自动报工数量"/>
+		<gdywcsl type="integer" required="false" comment="报完工数量" label="报完工数量"/><!-- 这个是确认的数量 -->
+		<zzjgid type="pk" comment="组织机构ID"/>
+		<dyzt type="dict" required="false" comment="打印状态" label="打印状态"/>
+		<czry type="user" required="false" maxlength="20" comment="操作人员" label="操作人员"/>
+		<fgdbh type="string" required="false" maxlength="200" comment="父工单编号" label="父工单编号"/>
+		<xh type="string" required="true" maxlength="50" comment="箱号" label="箱号"/>
+		<tssyx type="string" required="false" maxlength="50" comment="调试试运行" label="调试试运行"/>
+		<bfgf type="string" required="false" maxlength="50" comment="报废工废" label="报废工废"/>
+		<bflf type="string" required="false" maxlength="50" comment="报废料废" label="报废料废"/>
+		<kgzt type="string" required="false" maxlength="50" comment="开工状态" label="开工状态"/>
+		<jgjp type="integer" required="false" comment="加工节拍(秒)" label="加工节拍"/>
+	</fields>
+</model>

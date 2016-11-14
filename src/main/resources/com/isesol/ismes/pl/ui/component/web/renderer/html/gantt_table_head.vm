@@ -1,0 +1,7 @@
+<gantt-table enabled="$runtime.getAttribute("enabled")"
+             columns="$runtime.getAttribute("columns")"
+             headers="$runtime.getAttribute("headers")"
+             classes="$runtime.getAttribute("classes")"
+             formatters="$runtime.getAttribute("formatters")"
+             contents="$runtime.getAttribute("contents")"
+             header-contents="$runtime.getAttribute("header-contents")">

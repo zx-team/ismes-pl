@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 质检结果 -->
+<model version="1.0.3" name="pl_zjjg">
+	<fields>
+		<zjjgid type="pk" pk="true" required="false"  comment="质检结果ID" label="质检结果ID"/>
+		<zjjgzbid type="pk" required="false"  comment="质检结果主表ID" label="质检结果主表ID"/>
+		<gxzjxlrid type="pk" required="false" comment="工序质检项录入id" label="工序质检项录入id"/>
+		<zjsj type="timestamp" required="false" comment="质检时间" label="质检时间"/>
+		<zjjg type="string" required="false" comment="质检结果" label="质检结果"/>
+	</fields>
+</model>
+	
+	
+	
+
+
+

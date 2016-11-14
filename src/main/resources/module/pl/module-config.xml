@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="pl" version="1.0.0" category="system">
+	<information>
+		<name>System User Management</name>
+		<vendor>
+			<name>Isesol isMES</name>
+			<url>http://www.isesol.com/</url>
+		</vendor>
+		<description>User is a module which adds user functionality to system.</description>
+		<license>AGPL</license>
+	</information>
+	<activities>
+		<activity name="taskbatch" dialect="java" roles="MANUFACTURING_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.pl.activity.TaskBatchPlanActivity"/>
+		<activity name="service" dialect="java" class="com.isesol.mes.ismes.pl.service.PlanService"/>
+		<activity name="gdyl" dialect="java" class="com.isesol.mes.ismes.pl.activity.GdActivity"/>
+		<activity name="jhpc" dialect="java" class="com.isesol.mes.ismes.pl.activity.JhpcActivity"/>
+		<activity name="gdpldy" dialect="java" roles="MANUFACTURING_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.pl.activity.BatchPrintActivity"/>
+		<activity name="scdd" dialect="java" class="com.isesol.mes.ismes.pl.activity.ScddActivity"/>
+		<activity name="gdservice" dialect="java" class="com.isesol.mes.ismes.pl.service.GdService"/>
+	</activities>
+	<roles>
+		<role name="MANUFACTURING_MANAGEMENT_ROLE" label="生产管理人员_计划" description="生产管理相关" />
+	</roles>
+	<menus>
+		<!-- 生产计划（一级） -->
+		<category name="produce_plan" label="生产计划" icon="#ff6953;Production_planning"  weight="3"/>
+		<menu name="task_batch_list" label="生产排程" activity="taskbatch" activity-method="index" 
+ 			 category="produce_plan" roles="MANUFACTURING_MANAGEMENT_ROLE" description="生产排程" icon="button" weight="20"/>
+ 		<menu name="batch_plan_list" label="工单下发" activity="taskbatch" activity-method="batchPlanIndex" 
+ 			 category="produce_plan" roles="MANUFACTURING_MANAGEMENT_ROLE" description="工单下发" icon="button" weight="30"/>
+ 		<!--<menu name="batch_print_list" label="工单打印" activity="gdpldy" activity-method="showGdlist"
+ 			 category="produce_plan" roles="MANUFACTURING_MANAGEMENT_ROLE" description="工单打印" icon="button" weight="40"/>-->
+ 		<!--<menu name="workorder" label="程序补发" activity="gdpldy" activity-method="gdxfList"
+ 			 category="produce_plan" roles="MANUFACTURING_MANAGEMENT_ROLE" description="程序补发" icon="button" weight="50"/>-->
+ 	    <menu name="gdcx" label="在制品查询" activity="gdyl" activity-method="gdcx" 
+ 			 category="statement" roles="MANUFACTURING_MANAGEMENT_ROLE" description="在制品查询" icon="button" weight="50"/>
+	</menus>
+	<services>
+		<service name = "plservice_gdxx" activity = "service" activity-method = "query_gdxx"></service>
+		<service name = "plservice_gdjgjd" activity = "service" activity-method = "query_gdjgjd"></service>
+		<service name = "plservice_gdxxmt" activity = "service" activity-method = "query_gdxxmt"></service>
+		<service name = "plservice_gdxxnow" activity = "service" activity-method = "query_gdxxnow"></service>
+		<service name = "plservice_xjxx" activity = "service" activity-method = "query_xjxx"></service>
+		<service name = "plservice_gdxxByPcid" activity = "service" activity-method = "query_gdxxByPcid"></service>
+		<service name = "plservice_gxslByPcid" activity = "service" activity-method = "query_gxslByPcid"></service>
+		<service name = "plservice_gdxxfy" activity = "service" activity-method = "query_gdxxfy"></service>
+		<service name = "plservice_gdxxfyByZtdm" activity = "service" activity-method = "query_gdxxByZtdm"></service>
+		<service name = "plservice_gdxxByGdbh" activity = "service" activity-method = "query_gdxxByGdbh"></service>
+		<service name = "plservice_gdxxByXh" activity = "service" activity-method = "query_gdxxByXh"></service>
+		<service name = "updateGdStatusService" activity = "service" activity-method = "updateGdStatusByBatchCode"></service>
+		<service name = "plservice_gdxx_param" activity = "service" activity-method = "query_gdxxByParam"></service>
+		<service name = "plservice_sczbxxb_param" activity = "service" activity-method = "query_sczbxxbByParam"></service>
+		<service name = "plservice_gdxxByGdbh_param" activity = "service" activity-method = "query_gdxxByGdbh"></service>
+		<service name = "plservice_sczbxxb_OrLb" activity = "service" activity-method = "query_sczbxxb_OrLb"></service>
+		<service name = "plservice_save_bgsl" activity = "service" activity-method = "save_bgsl"></service>
+		<service name = "plservice_save_sqzj" activity = "service" activity-method = "save_sqzj"></service>
+		<service name = "plservice_saveAupdateGdb" activity = "gdyl" activity-method = "saveAupdate_Gdb"></service>
+		<service name = "plservice_updateGdbTime" activity = "gdyl" activity-method = "updateGdbTime"></service>
+		<service name = "plservice_query_gdxxBysbbh" activity = "gdyl" activity-method = "query_gdxxBysbbh"></service>
+		<service name = "plservice_query_gdxxBysbid" activity = "gdyl" activity-method = "query_gdxxBysbid"></service>
+		<service name = "plservice_updateNcbgsl" activity = "gdyl" activity-method = "updateNcbgsl"></service>
+		<service name = "plservice_gdxxByGdbhIn_param" activity = "service" activity-method = "query_gdxxByGdbhIn"></service>
+		<service name = "plservice_gdxxByGdID" activity = "service" activity-method = "query_gdxxByGdID"></service>
+		<!-- 待入库工单查询，末序已完成工单 -->
+		<service name = "plservice_ywcgdxx" activity = "service" activity-method = "query_ywcgdxx"></service>
+		<!-- 更新工单入库状态 -->
+		<service name = "plservice_updategdxxByGdID" activity = "service" activity-method = "updategdxxByGdID"></service>
+		<service name = "plservice_DataA_UpdateGd" activity = "gdservice" activity-method = "DataA_UpdateGd"></service>
+		<service name = "plservice_queryGdxxByGdSbId" activity = "gdservice" activity-method = "queryGdxxByGdSbId"></service>
+		<service name = "plservice_query_gdxxsByxh" activity = "service" activity-method = "query_gdxxsByxh"></service>
+		<service name = "plservice_save_zjjg" activity = "service" activity-method = "save_zjjg"></service>
+		<!-- 检验记录查询，查询质检结果主表 -->
+		<service name = "plservice_query_zjjgzb" activity = "service" activity-method = "query_zjjgzb"></service>
+		<service name = "plservice_query_zjjgdetail" activity = "service" activity-method = "query_zjjgdetail"></service>
+		<service name = "plservice_query_GdxxByScph" activity = "gdservice" activity-method = "queryGdxxByScph"></service>
+		<service name = "plservice_query_EquivalentYieldByScrw" activity = "service" activity-method = "getEquivalentYieldByScrw"></service>
+		<service name = "plservice_query_EquivalentYieldByPc" activity = "service" activity-method = "getEquivalentYieldByPc"></service>
+		<service name = "plservice_query_EquivalentYieldByXh" activity = "service" activity-method = "getEquivalentYieldByXh"></service>
+		<service name = "plservice_query_xhxxByPcid" activity = "service" activity-method = "query_xhxxByPcid"></service>
+	</services>
+</module>

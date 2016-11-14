@@ -1,0 +1,1 @@
+<gantt-draw-task enabled="$runtime.getAttribute("enabled")" move-threshold="$runtime.getAttribute("move-threshold")" task-factory="$runtime.getAttribute("task-factory")">

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 生产任务准备清单 -->
+<model version="1.0.1" name="pl_scrwzbqd">
+	<fields>
+		<qdid type="pk" pk="true" required="false" maxlength="25" comment="生产准备ID" label="生产准备ID"/>
+		<gdid type="pk" comment="工单ID" label="工单ID"/>
+		<wlid type="pk" required="false" maxlength="25" comment="物料ID" label="物料ID"/>
+		<wllb type="dict" required="false" maxlength="20" comment="物料类别" label="物料类别"/>
+		<zbsl type = "decimal" required="false" length="12" precision="2" comment="准备数量" label="准备数量"/>
+		<ydwsj type ="timestamp" required="false" comment="应到位时间" label="应到位时间"/>
+		<dwdm type="dict" required="false" maxlength="20" comment="单位代码" label="单位代码"/>
+	</fields>
+</model>
+

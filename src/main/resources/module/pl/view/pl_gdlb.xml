@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="pl_gdlb" title="工单列表">
+	<normal-actions>
+		<button name="queryBtn" label="查询"  type="button" icon="icon-query" onClick="openQueryWindow"></button>
+		<button name="returnBtn" label="打印"  type="button" icon="icon-Print" onClick="createPDF" ></button>
+	</normal-actions>
+	<table name="table_gdlb" scroll="false" minheight="430" url="/gdpldy/table_gdlb" layoutconstraint="md:12;sm:12;" multiselect="true" >
+		<column label="工单id" name="gdid" key="true" hidden="true" editable="false"  ></column>
+		<column label="工单编号" name="gdbh" editable="false" ></column>
+		<column label="批次号" name="scrwpcbh" editable="false" ></column>
+		<column label="加工任务号" name="scrwbh" editable="false" ></column>
+		<column label="设备编号" name="sbbh" editable="false" ></column>
+		<column label="计划员" name="czry"  editable="false" type="user"></column>
+		<column label="加工数量" name="jgsl" editable="false" ></column>
+		<column label="计划开始时间" name="jhkssj"  type="datetime"  editable="false" width="120"></column>
+		<column label="计划完成时间" name="jhjssj"  type="datetime"  editable="false" width="120"></column>
+		<column label="工单状态" name="gdztdm" type="dict" dictionary="GDZT"></column>
+		<column label="工单打印状态" name="dyzt" type="dict" dictionary="DYZT" ></column>
+		<column label="零件id" name="ljid"  hidden="true" editable="false"  ></column>
+		<column label="工序id" name="gxid"  hidden="true" editable="false"  ></column>
+		<column label="设备id" name="sbid"  hidden="true" editable="false"  ></column>
+	</table>
+	<modal name="qyeryModal" heading="查询工单" sizing="large" show="false" keyboard="true" onShown="resetQueryWindow">
+		<modal-body>
+			<form name="form-query"  horizontal="true">
+				<form-body>
+					<form-group>
+						<label for="query_scrwbh" text="加工任务号" layoutconstraint="md:2;sm:2"/>
+						<search name="query_scrwbh"  url="/gdpldy/rwxxSelect"  placeholder="请输入加工任务号"  displaykey="label" searchkey="label value"  layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_pcbh" text="批次编号" layoutconstraint="md:2;sm:2"/>
+						<search name="query_pcbh"  url="/gdpldy/pcxxSelect"  placeholder="请输入批次编号" displaykey="label" searchkey="label value" layoutconstraint="md:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_gdbh" text="工单号" layoutconstraint="md:2"/>
+					  <text name="query_gdbh"  placeholder="请输入工单号"  layoutconstraint="md:7;sm:7;"/>
+ 					</form-group>
+					<form-group>
+						<label for="query_sbbh" text="设备编号" layoutconstraint="md:2;sm:2"/>
+						<search name="query_sbbh" url="/gdpldy/sbxxSelect" placeholder="请输入设备编号" displaykey="label" searchkey="label value" layoutconstraint="md:7;sm:7;"/>
+ 					</form-group>
+					<!-- <form-group>
+						<label for="query_czry " text="调度员" layoutconstraint="md:2;sm:2"/>
+						<text name="query_czry" placeholder="调度员" layoutconstraint="md:7;sm:7;"/>
+ 					</form-group> -->
+					<!-- <form-group>
+						<label for="query_gdzt" text="工单状态" layoutconstraint="md:2;sm:2"/>
+						<select name="query_gdzt"   dictionary="GDZT"  placeholder="工单状态" layoutconstraint="md:4;"></select>
+					</form-group> -->
+					<form-group>
+						<label for="query_gddyzt" text="工单打印状态" layoutconstraint="md:2;sm:2"/>
+						<select name="query_gddyzt"   dictionary="DYZT"  placeholder="请选择工单打印状态" layoutconstraint="md:4;"></select>
+					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+			<button name="closeqyeryModalClick" label="取消" type="button" context="primary"  onClick="closeQueryWindow"></button>
+			<button name="qyeryModalClick" label="查询" type="button" context="primary" onClick="queryBtnClick"></button>
+		</modal-footer>
+	</modal>
+	
+	<attribute name="javascript">
+		<![CDATA[
+		function resetQueryWindow() {
+	    	 $('#form-query')[0].reset();
+	    	 ui.search('query_scrwbh').val({value:"",label:""});
+	    	 ui.search('query_pcbh').val({value:"",label:""});
+	    	 ui.text('query_gdbh').val('');
+	    	 ui.search('query_sbbh').val({value:"",label:""});
+	    	 ui.select('query_gddyzt').val('');
+	    }
+		var gdidList;
+		
+		function download_cxxx(rowid,rowdata){
+		    return ui.getRealUrl("/cxgl/download_cxxx?cxmc=");
+		}
+		
+		//生成PDF
+		function createPDF(){
+			var rows= ui.table("table_gdlb").getSelectedRows();
+			if(rows.length<=0)
+			{
+				ui.alert("请先选择一条数据");
+				return false;
+			}
+			var data_list= [];
+			for(var i = 0;i<rows.length;i++)
+			{
+				var data_row = {};
+				data_row.gdid = rows[i];
+				data_row.gdid = rows[i];
+				data_list.push(data_row);
+			} 
+			
+			window.open(ui.getUrl("/pl/gdpldy/exportPDF")+"?data_list="+JSON.stringify(data_list),"_blank");
+			setTimeout(function(){ ui.table("table_gdlb").reload(); },3000);//3秒后刷新页面table数据，主要更新打印标记。
+		}
+		
+		function closeQueryWindow() {
+	    	ui.modal("qyeryModal").hide();
+	    }
+	    //显示查询窗口
+	    function openQueryWindow() {
+	    	ui.modal("qyeryModal").show();
+	    }
+	    //查询数据
+	    function queryBtnClick(){
+			var data_row = {};
+			data_row.query_scrwbh = $('#query_scrwbh').val();
+			data_row.query_pcbh = $('#query_pcbh').val();
+			data_row.query_gdbh = $('#query_gdbh').val();
+			data_row.query_sbbh = $('#query_sbbh').val();
+			data_row.query_czry = $('#query_czry').val();
+			data_row.query_gdzt = $('#query_gdzt').val();
+			data_row.query_gddyzt = $('#query_gddyzt').val();
+			ui.table("table_gdlb").search(data_row);
+			closeQueryWindow();
+		}
+		
+		]]>
+	</attribute>
+</view>

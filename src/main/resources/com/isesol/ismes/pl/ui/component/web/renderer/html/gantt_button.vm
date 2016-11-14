@@ -1,0 +1,6 @@
+
+#if($runtime.getAttribute("href"))
+<a#printAttr("name","id")#printUrl("href","href") class="btn#printContext("btn")#printSizing("btn")#printExtAttr("classes")"#printStr("disabled","disabled")>#message("label")</a>
+#else
+<input#printAttr("name","id")#printAttr("name","name")#printAttr("ng-click","ng-click")#printAttr("type","type") value="#message("label")" class="btn#printContext("btn")#printSizing("btn")#printExtAttr("classes")"#printAttrMessage("tooltip","title")#printStr("tooltip",'data-toggle="tooltip"')#printStr("disabled","disabled")>
+#end

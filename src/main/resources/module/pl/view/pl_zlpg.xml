@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="pl_zlpg" title="质量派工/报完工">
+	<normal-actions>
+		<button name="queryBtn" label="查询"  type="button" icon="icon-query" onClick="openQueryWindow"></button>
+	</normal-actions>
+	<table name="table_jgrw" scroll="false" minheight="430" url="/jdgz/table_jgrw"  onSelectRow="table_gdrwClickrow"  layoutconstraint="md:12;sm:12;">
+		<column label="生产任务ID" name="scrwid" key="true" hidden="true"></column>
+		<column label="名称" name="ljmc"  ></column>
+		<column label="零件图号" name="ljbh"  ></column>
+		<column label="任务数量" name="jgsl"  ></column>
+		<column label="已完成数量" name="ywcsl" hidden="true"></column>
+		<column label="任务计划开始日期" name="jgksrq" sortable="true"  type="date"></column>
+		<column label="任务计划完成日期" name="jgwcrq" sortable="true"  type="date"></column>
+		<column label="完成进度" name="wcjd" type="progress"></column>
+		<!-- <column label="计划执行情况" name="scrwzt_dm"  ></column>-->
+		<subtable scroll="false"  url="/jdgz/table_jgrwpcxx" onSelectRow="table_pcxxClickrow" layoutconstraint="md:12;sm:12;">
+			<column label="生产任务批次ID" name="scrwpcid" key="true" hidden="true"></column>
+			<column label="批次号" name="pcbh"></column>
+			<column label="批次名称" name="pcmc"></column>
+			<column label="批次计划开始日期" name="pcjhksrq" sortable="true"  type="date"></column>
+			<column label="批次计划完成日期" name="pcjhwcrq" sortable="true"  type="date"></column>
+			<column label="加工数量" name="pcsl"  ></column>
+			<column label="已完成数量" name="ywcsl" hidden="true"></column>
+			<column label="批次进度" name="wcjd" type="progress"></column>
+			<column label="批次状态" name="pcjhztdm"  ></column>
+		</subtable>
+	</table>
+			
+	<modal name="gdModal" sizing="large" show="false" keyboard="true" >
+		<modal-body>
+			<table name="table_gdjd"  scroll="false" onSelectRow="table_gdjdClickrow" url="/jdgz/query_gdjd"
+				multiselect="true">
+				<column label="工单编S号" name="gdid" key="true" ></column>
+				<column label="工单名称" name="gdmc"></column>
+				<column label="工单数量" name="jgsl"></column>
+				<column label="计划开始时间" name="jhkssj" sortable="true" type="datetime" width="120"></column>
+				<column label="计划完成时间" name="jhjssj" sortable="true" type="datetime" width="120"></column>
+				<column label="已完成数量" name="gdywcsl" ></column>
+				<column label="报工数量" name="gdybgsl" ></column>
+				<column label="NC自动报工数量" name="ncbgsl" ></column>
+				<column label="本次报工数量" name="bcbgsl" editable="true"></column>
+			</table>
+		</modal-body>
+		<modal-footer>
+			<button name="closeBtnClick" label="关闭" type="button" context="primary"  onClick="closeModalWindow"></button>
+			<button name="zjBtnClick" label="质检" type="button" context="primary"  onClick="zjBtnClick"></button>
+			<button name="saveBtnClick" label="保存" type="button" context="primary" onClick="saveBtnClick"></button>
+		</modal-footer>
+	</modal>
+	<modal name="qyeryModal" heading="查询加工任务" sizing="large" show="false" keyboard="true" >
+		<modal-body>
+			<form name="form-horizontal"  horizontal="true">
+				<form-body>
+					<form-group>
+						<label for="query_ljmc " text="零件名称" layoutconstraint="md:2;sm:2"/>
+						<text name="query_ljmc" placeholder="请输入零件名称" validate="{required:true}" layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_ljbh" text="零件图号" layoutconstraint="md:2;sm:2"/>
+						<text name="query_ljbh" placeholder="请输入零件图号" layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_rwksStart" text="任务计划开始日期" layoutconstraint="md:2"/>
+						<bunch layoutconstraint="md:10">
+							<input-inline width="medium">
+							<date name="query_jgksstart" placeholder="请输入起始日期" validate="{required:true}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="query_jgksend" placeholder="请输入结束日期" validate="{required:true}"/>
+							</input-inline>
+						</bunch>
+ 					</form-group>
+					<form-group>
+						<label for="query_rwksStart" text="任务计划完成时间" layoutconstraint="md:2"/>
+						<bunch layoutconstraint="md:10">
+							<input-inline width="medium">
+							<date name="query_jgjsstart" placeholder="请输入起始日期" validate="{required:true}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="query_jgjsend" placeholder="请输入结束日期" validate="{required:true}"/>
+							</input-inline>
+						</bunch>
+ 					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+				<button name="closeqyeryModalClick1" label="取消" type="button" context="primary"  onClick="closeQueryWindow"></button>
+				<button name="qyeryModalClick" label="查询" type="button" context="primary" onClick="queryBtnClick"></button>
+		</modal-footer>
+	</modal>
+	<attribute name="javascript">
+	<![CDATA[
+	
+		document.onkeydown=function(event){            
+			var e = event || window.event || arguments.callee.caller.arguments[0];            
+			if(e && e.keyCode==13){     
+			 saveBtnClick();
+			}       
+		}; 
+	
+		function table_gdjdClickrow(rowid,status) {
+			if(status)
+			{
+				ui.table("table_gdjd").editRow(rowid);
+			}else{
+				ui.table("table_gdjd").restoreRow(rowid);
+			}
+		}
+		
+		
+		function table_gdrwClickrow(rowid,status) {
+			ui.table("table_jgrwpcxx").search({val_scrw:"('"+rowid+"')"});
+		}
+		function table_pcxxClickrow(rowid,status) {
+			ui.table("table_gdjd").search({pcid:rowid});
+			openModalWindow();
+		}
+		function queryjgrw_Clickrow(rowid,status) {
+			openQueryWindow();
+		}
+		
+		function prepare_jgrwpcxxTable() {
+		  	var  rows = ui.table("table_jgrw").getRowids();
+		  	if (rows.length>0) {
+		  		ui.table("table_jgrwpcxx").search({val_scrw:"('"+rows[0]+"')"});
+		  		ui.table("table_jgrw").selectRow(rows[0]);
+		 	 }else{
+		 	 	ui.table("table_jgrwpcxx").search({val_scrw:"('')"});
+			}
+		}
+		
+		function openModalWindow() {
+	    	ui.modal("gdModal").show();
+	    }
+	    function closeModalWindow() {
+	    	ui.modal("gdModal").hide();
+	    }
+		function openQueryWindow() {
+	    	ui.modal("qyeryModal").show();
+	    }
+	    function closeQueryWindow() {
+	    	ui.modal("qyeryModal").hide();
+	    }
+	    
+		function toPercent(rowid,colmodel,rowdata,action){
+			return (Math.round((rowdata.ywcsl/rowdata.jgsl) * 10000)/100).toFixed(2);
+		}
+		function toPercent_pc(rowid,colmodel,rowdata,action){
+			return (Math.round((rowdata.ywcsl/rowdata.pcsl) * 10000)/100).toFixed(2);
+		}
+		var rowid;
+		
+		function saveBtnClick(){
+			
+			var rows= ui.table("table_gdjd").getSelectedRows();
+			if(rows.length<=0)
+			{
+				ui.alert("请先选择一条数据");
+				return false;
+			}
+			var data_list= [];
+			for(var i = 0;i<rows.length;i++)
+			{
+				//ui.table("table_gdjd").getCell(rows[i],"gdybgsl")
+				var data_row = {};
+				data_row.gdid = rows[i];
+				data_row.gdywcsl = Number($('#'+rows[i]+"_bcbgsl").val()) + Number(ui.table("table_gdjd").getCell(rows[i],"gdywcsl"));
+				data_list.push(data_row);
+			}
+			$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/jdgz/save_bgsl"),
+		             async: false,
+		             data: {data_list : JSON.stringify(data_list)},
+		             success: function(data){
+		             	ui.table("table_gdjd").reload();
+		             	ui.table("table_jgrw").reload();
+		             	ui.success("保存报工成功");
+		             }
+		         });
+		}
+		
+		function zjBtnClick(){
+			var rows= ui.table("table_gdjd").getSelectedRows();
+			if(rows.length<=0)
+			{
+				ui.alert("请先选择一条数据");
+				return false;
+			}
+			var data_list= [];
+			for(var i = 0;i<rows.length;i++)
+			{
+				var data_row = {};
+				data_row.gdid = rows[i];
+				data_list.push(data_row);
+			}
+			$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/jdgz/save_sqzj"),
+		             async: false,
+		             data: {data_list : JSON.stringify(data_list)},
+		             success: function(data){
+		             	ui.table("table_gdjd").reload();
+		             	ui.success("申请质检成功");
+		             }
+		         });
+		}
+		function queryBtnClick(){
+			var data_row = {};
+			data_row.ljmc = $('#query_ljmc').val();
+			data_row.ljbh = $('#query_ljbh').val();
+			data_row.query_jgksstart = $('#query_jgksstart').val();
+			data_row.query_jgksend = $('#query_jgksend').val();
+			data_row.query_jgjsstart = $('#query_jgjsstart').val();
+			data_row.query_jgjsend = $('#query_jgjsend').val();
+			ui.table("table_jgrw").search(data_row);
+			closeQueryWindow();
+		}
+	]]>
+	</attribute>
+</view>

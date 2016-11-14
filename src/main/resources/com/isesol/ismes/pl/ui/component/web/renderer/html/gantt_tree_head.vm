@@ -1,0 +1,4 @@
+<gantt-tree enabled="$runtime.getAttribute("enabled")"
+            header-content="$runtime.getAttribute("header-content")"
+            content="$runtime.getAttribute("content")"
+            keep-ancestor-on-filter-row="$runtime.getAttribute("keep-ancestor-on-filter-row")">

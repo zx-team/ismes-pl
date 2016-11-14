@@ -1,0 +1,2 @@
+
+<option value="$runtime.getAttribute("value")"#printAttr("ng-repeat","ng-repeat")#printStr("selected","selected")>#message("label")</option>

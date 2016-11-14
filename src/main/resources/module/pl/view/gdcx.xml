@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="gdcx" title="在制品查询">
+		<normal-actions>
+		<button name="queryBtn" label="查询"  type="button" icon="icon-query" onClick="openQueryWindow"></button>
+	</normal-actions>
+	<table name="table_jgrw" scroll="false"  url="table_gdcx" minheight="430"  layoutconstraint="md:12;sm:12;">
+		<column label="生产任务编号" name="scrwbh"  ></column>
+		<column label="生产任务id" name="scrwid" hidden="true" key="true"></column>
+		<column label="零件名称" name="ljmc"  ></column>
+		<column label="零件图号" name="ljbh"  ></column>
+		<column label="加工数量" name="jgsl"  ></column>
+		<column label="加工开始日期" name="jgksrq" sortable="true"  type="date"></column>
+		<column label="加工完成日期" name="jgwcrq" sortable="true"  type="date"></column>
+		<subtable scroll="false"  url="/gdyl/table_queryInfo" onSelectRow="table_pcxxClickrow" layoutconstraint="md:12;sm:12;">
+			<column label="工序组ID" name="gxzid" key="true" hidden="true"></column>
+			<column label="工序名称" name="gxzmc"></column>
+			<column label="加工数量" name="jgsl"></column>
+			<column label="完成数量" name="gdywcsl"></column>
+			<column label="在制品数量" name="zzpsl" sortable="true"></column>
+		</subtable>
+	</table>
+	<modal name="qyeryModal" heading="查询在制品信息" sizing="large" show="false" keyboard="true"  onShown="resetQueryWindow">
+		<modal-body>
+			<form name="qyerykcglForm"  horizontal="true">
+				<form-body>
+					<form-group>
+						<label for="query_ljbh " text="零件图号" layoutconstraint="md:2;sm:2"/>
+						<text name="query_ljbh" placeholder="请输入零件图号" validate="{required:true}" layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="query_ljmc" text="零件名称" layoutconstraint="md:2;sm:2"/>
+						<text name="query_ljmc" placeholder="请输入零件名称" layoutconstraint="md:7;sm:7;"/>
+					</form-group>
+					<form-group>
+						<label for="date1" text="加工开始日期" layoutconstraint="md:2"/>
+						<bunch layoutconstraint="md:10">
+							<input-inline width="medium">
+							<date name="date_jgksbegin" placeholder="请输入起始日期" validate="{required:true}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="date_jgksend" placeholder="请输入结束日期" validate="{required:true}"/>
+							</input-inline>
+						</bunch>
+					</form-group>
+					<form-group>
+						<label for="date1" text="加工结束时间" layoutconstraint="md:2"/>
+						<bunch layoutconstraint="md:10">
+							<input-inline width="medium">
+							<date name="date_jgjsbegin" placeholder="请输入起始日期" validate="{required:true}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="date_jgjsend" placeholder="请输入结束日期" validate="{required:true}"/>
+							</input-inline>
+						</bunch>
+					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+				<button name="resetqyeryModalClick" label="重置" type="button" onClick="resetQueryWindow"></button>
+				<button name="closeqyeryModalClick" label="取消" type="button" onClick="closeQueryWindow"></button>
+				<button name="qyeryModalClick" label="查询" type="button" context="primary" onClick="queryBtnClick"></button>
+		</modal-footer>
+	</modal>
+	<attribute name="javascript">
+	<![CDATA[
+	
+		document.onkeydown=function(event){            
+			var e = event || window.event || arguments.callee.caller.arguments[0];            
+			if(e && e.keyCode==13){     
+			 saveBtnClick();
+			}       
+		}; 
+		
+		var selID = '';
+		function table_pcxxClickrow(rowid,status) {
+		
+			//var rowdate = this.getRow(rowid);
+			//alert(rowdate.scrwid);
+			ui.table("table_gdjd").search({scrwid:rowid});
+			//selID = rowdate.scrwid;
+			openModalWindow();
+		}
+		
+		function queryBtnClick(){
+			var data_row = {};
+			data_row.query_ljbh = $('#query_ljbh').val();
+			data_row.query_ljmc = $('#query_ljmc').val();
+			data_row.date_jgksbegin = $('#date_jgksbegin').val();
+			data_row.date_jgksend = $('#date_jgksend').val();
+			data_row.date_jgjsbegin = $('#date_jgjsbegin').val();
+			data_row.date_jgjsend = $('#date_jgjsend').val();
+			ui.table("table_jgrw").search(data_row);
+			closeQueryWindow();
+		}
+		
+		function openQueryWindow() {
+	    	ui.modal("qyeryModal").show();
+	    }
+	    
+	    function resetQueryWindow() {
+	    	 $('#qyerykcglForm')[0].reset();
+	    }
+	    
+	   	function closeQueryWindow() {
+	    	ui.modal("qyeryModal").hide();
+	    }
+		
+	]]>
+	</attribute>
+</view>

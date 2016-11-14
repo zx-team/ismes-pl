@@ -1,0 +1,10 @@
+#if($runtime.getLayoutConstraint().size()>0)
+<div class="bunch #printExtAttr("classes")">
+#end
+#if($runtime.getAttribute("label"))
+<label#printAttr("name","for") class="control-label">#message("label")</label>
+#end
+<input type="text" class="form-control" #printAttr("ng-model","ng-model")#printAttr("ng-blur","ng-blur") data-time-format="HH:mm" bs-timepicker />
+#if($runtime.getLayoutConstraint().size()>0)
+</div>
+#end

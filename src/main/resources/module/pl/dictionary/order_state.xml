@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category name="GDZT" label="工单执行状态代码">
+	<field value="10" label="已保存"/><!-- 计划排产页面，点击保存按钮 -->
+	<field value="15" label="未下发"/><!-- 计划排产页面，点击发布按钮-->
+	<field value="20" label="已下发"/><!-- 工单预览页面，点击下发按钮后 -->
+	<field value="30" label="加工中"/><!-- 扫描枪扫码之后 -->
+	<field value="40" label="质检中"/><!-- 质量派工页面，申请质检后/ 在工序中 设置为必检时 工人手工报工后 -->
+	<field value="50" label="加工完成"/><!-- 报完工后/质检人员 录入质检结果后 -->
+	<field value="55" label="已入库"/><!-- 工单入库后 -->
+	<field value="60" label="已终止"/><!-- 任务终止 -->
+</category>

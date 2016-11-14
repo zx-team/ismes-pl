@@ -1,0 +1,2 @@
+<div ng-app="$runtime.getAttribute("name")" ng-strict-di>
+<div id="ganttAppDiv" ng-cloak="true" ng-controller="$runtime.getAttribute("controller")" #printAttr("ng-click","ng-click")>

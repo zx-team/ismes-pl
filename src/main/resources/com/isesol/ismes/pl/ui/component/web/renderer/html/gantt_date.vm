@@ -1,0 +1,10 @@
+#if($runtime.getLayoutConstraint().size()>0)
+<div class="bunch #printExtAttr("classes")">
+#end
+#if($runtime.getAttribute("label"))
+<label#printAttr("name","for") class="control-label">#message("label")</label>
+#end
+<input type="text" class="form-control" #printAttr("ng-model","ng-model") #if($runtime.getAttribute("start-date")) #printAttr("start-date","start-date") #printAttr("start-week","start-week") #end #printAttr("ng-blur","ng-blur") #printAttr("placeholder","placeholder") data-date-format="yyyy-MM-dd" bs-datepicker autoclose="true" container='body' />
+#if($runtime.getLayoutConstraint().size()>0)
+</div>
+#end

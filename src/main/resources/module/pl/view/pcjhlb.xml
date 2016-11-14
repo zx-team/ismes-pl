@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="pcjhlb" title="工单下发">
+	<table name="table-pcjh" showrownum="false" scroll="false" minheight="430"
+		editurl="" multiselect="false" url="batchPlanLevelOneTable">
+		<column label="任务id" name="scrwid" key="true" hidden = "true"/>
+		<column label="零件id" name="ljid" hidden = "true"/>
+		<column label="生产任务编号" name="scrwbh" hidden = "true"></column>
+		<column label="生产批号" name="scph" ></column>
+		<column label="零件名称" name="ljmc"/>
+		<column label="任务数量" name="jgsl"/>
+		<column label="任务计划开始日期" name="jgksrq" type="date" sortable="true" />
+		<column label="任务计划完成日期" name="jgwcrq" type="date" sortable="true"/>
+		<column label="生产任务状态" name="scrwztdm"/>
+		
+		<subtable showrownum="false" scroll="false" minheight="160" showpager="false"
+			editurl="" multiselect="false" url="batchPlanLevelTwoTable">
+			<column label="批次id" name="scrwpcid" key="true" hidden = "true"/>
+			<column label="批次计划状态代码" name="pcjhztdm" hidden = "true"/>
+			<column label="批次编号" name="pcbh" hidden = "true"/>
+			<column label="生产批号" name="pcmc" ></column>
+			<column label="批次名称" name="pcmc"/>
+			<column label="批次数量" name="pcsl"/>
+			<column label="批次计划开始日期" name="pcjhksrq"  type="date" sortable="true"/>
+			<column label="批次计划结束日期" name="pcjhwcrq"  type="date" sortable="true"/>
+			<column label="批次状态" name="pcjhzt"/>
+			<column label="操作" type="operation">
+			<attribute name="formatoptions"><![CDATA[
+					[
+						{
+							name:"edit",
+							icon:"icon-edit",
+							label:"查看工艺流程卡",
+							click:showGd
+						}
+					]
+				]]></attribute>
+			</column>
+		</subtable>
+	</table>
+	<attribute name="javascript">
+	<![CDATA[
+	
+		//工单预览，YangFan
+		function showGd(name,rowid,table){
+			var scrwpcid =  table.getCell(rowid,"scrwpcid");
+			var url =  ui.getRealUrl("/gdyl/gdPreviewIndex") + "?scrwpcid=" + scrwpcid;
+			window.location.href= url;
+		}
+	]]>
+	</attribute>
+</view>

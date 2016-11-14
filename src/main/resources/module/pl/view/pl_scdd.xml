@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="pl_scdd" title="生产调度" onReady="testViewReady">
+	<gantt-app name="angularGanttDemoApp" controller="MainCtrl" ng-click="hideMenu()">
+		<gantt-context-menu menuOptions="menuOptions"></gantt-context-menu>
+		<modal name="modifyWorkOrderModal" heading="编辑工单" sizing="large" show="false" keyboard="false">
+			<modal-body>
+				<form name="modal-form" action="modal-form" method="post" horizontal="true">
+					<form-body>
+						<form-group>
+							<label for="jgksrq" text="加工开始时间" layoutconstraint="md:3"/>
+							<gantt-date name="jgksrq" placeholder="开始日期" ng-model="editedTask.model.from"  ng-blur="checkTaskOnModal('from')" layoutconstraint="md:5;sm:5;"/>
+							<gantt-time name="jgkssj" ng-model="editedTask.model.from" ng-blur="checkTaskOnModal('from')" layoutconstraint="md:3;sm:3;"/>
+						</form-group>
+						<form-group>
+							<label for="jgjsrq" text="加工完成时间" layoutconstraint="md:3"/>
+							<gantt-date name="jgjsrq" placeholder="完成日期" ng-model="editedTask.model.to" ng-blur="checkTaskOnModal('to')" layoutconstraint="md:5;sm:5;"/>
+							<gantt-time name="jgjssj" ng-model="editedTask.model.to" ng-blur="checkTaskOnModal('to')" layoutconstraint="md:3;sm:3;"/>
+						</form-group>
+						<form-group>
+							<label for="jgsl" text="加工数量" layoutconstraint="md:3"/>
+							<gantt-number name="jgsl" ng-model="editedTask.model.num" placeholder="请输入加工数量" readonly="false" format="###,###.00" validate="{required:true,digits:true}" layoutconstraint="md:8"/>
+						</form-group>
+						<form-group>
+							<gantt-checkbox inline="true" name="favorite1" label="拆单" value="banana" ng-click="changeSplitBill()" ng-model="editedTask.model.splitBill" layoutconstraint="md-offset:2;md:1" />
+							<gantt-text name="cd" ng-readonly="!editedTask.model.splitBill" ng-model="editedTask.model.splitBillId" placeholder="请输入需要拆单的工单号" layoutconstraint="md:5;sm:5;"/>
+						</form-group>
+					</form-body>
+				</form>
+			</modal-body>
+			<modal-footer>
+				<gantt-button type="button" ng-click="hideTaskModal('confirm')" label="确认"></gantt-button>
+				<gantt-button type="button" ng-click="hideTaskModal('cancel')" label="取消"></gantt-button>
+			</modal-footer>
+		</modal>
+		<gantt-panel heading="显示选项" layoutconstraint="md:12;">
+			<gantt-panel-body>
+				<form-group sizing="small">
+					<label for="timeDimension" text="时间维度" layoutconstraint="md:1;" />
+					<gantt-select name="timeDimension" layoutconstraint="md:1;"
+						ng-model="options.scale_temp">
+						<gantt-option ng-repeat="x in timeScale" value="{{x.value}}"
+							label="{{x.label}}" />
+					</gantt-select>
+					<label for="selectDevice" text="设备筛选" layoutconstraint="md:1" />
+					<gantt-select name="selectDevice" ng-model="filterRowModel" layoutconstraint="md:2;">
+						<gantt-option ng-repeat="x in filterRowTemp" value="{{x.value}}"
+							label="{{x.label}}" />
+					</gantt-select>
+						<label for="ksrq" text="开始日期" layoutconstraint="md:1" />
+						<gantt-date name="ksrq" placeholder="开始日期" ng-model="fromDayTemp"
+							start-date="{{options.currentDateValue.toString()}}" ng-blur=""
+							layoutconstraint="md:2;sm:1;" />
+						<label for="jsrq" text="完成日期" layoutconstraint="md:1" />
+						<gantt-date name="jsrq" placeholder="完成日期" ng-model="toDayTemp"
+							start-date="{{options.currentDateValue.toString()}}" ng-blur=""
+							layoutconstraint="md:2;sm:1;" />
+						<gantt-button name="closePasswordBtn" label="确定" type="button"
+						context="primary" layoutconstraint="md:1;sm:1;" ng-click="confirmDisplay()"></gantt-button>
+				</form-group>
+			</gantt-panel-body>
+		</gantt-panel>
+		<panel layoutconstraint="md:1;">
+			<panel-body>
+				<image shape="thumbnail" name="image_lj" popshow="true" src="" />
+			</panel-body>
+		</panel>
+		<panel layoutconstraint="md:11;">
+			<panel-body>
+				<hidden name="pcid" bind="pcxx.pcid"></hidden>
+				<hidden name="ljid" bind="pcxx.ljid"></hidden>
+				<hidden name="ljbh" bind="pcxx.ljbh"></hidden>
+				<hidden name="ljmc" bind="pcxx.ljmc"></hidden>
+				<hidden name="pcsl" bind="pcxx.pcsl"></hidden>
+				<hidden name="pcbh" bind="pcxx.pcbh"></hidden>
+				<hidden name="pcjhztdm" bind="pcxx.pcjhztdm"></hidden>
+				<hidden name="pcjhztmc" bind="pcxx.pcjhztmc"></hidden>
+				<hidden name="kssj" bind="pcxx.wholekssj"></hidden>
+				<hidden name="pic_url" bind="pcxx.url"></hidden>
+				<hidden name="pcjhksrq" bind="pcxx.pcjhksrq"></hidden>
+				<hidden name="pcjhwcrq" bind="pcxx.pcjhwcrq"></hidden>
+
+				<label for="pcid" text="零件名称" layoutconstraint="md:2;" />
+				<label for="pcid" text="批次名称" layoutconstraint="md:3;" />
+				<label for="pcid" text="批次数量(原)" layoutconstraint="md:2;" />
+				<label for="pcid" text="计划开始日期(原)" layoutconstraint="md:2;" />
+				<label for="pcid" text="计划完成日期(原)" layoutconstraint="md:2;" />
+				<label for="pcid" text="批次计划状态" layoutconstraint="md:1;" />
+				
+				<plaintext name="ljmc" bind="pcxx.ljmc" layoutconstraint="md:2;"/>
+				<plaintext name="pcmc" bind="pcxx.pcmc" layoutconstraint="md:3;"/>
+				<plaintext name="pcsl" bind="pcxx.pcsl" layoutconstraint="md:2;"/>
+				<plaintext name="pcjhksrq" bind="pcxx.pcjhksrq" layoutconstraint="md:2;"/>
+				<plaintext name="pcjhwcrq" bind="pcxx.pcjhwcrq" layoutconstraint="md:2;"/>
+				<gantt-plaintext name="pcjhztmc" ng-bind="pcjhztmc" layoutconstraint="md:1;"/>
+				
+				<label for="pcid" text="零件图号" layoutconstraint="md:2;" />
+				<label for="pcid" text="批次编号" layoutconstraint="md:3;" />
+				<label for="pcid" text="批次数量(现)" layoutconstraint="md:2;" />
+				<label for="pcid" text="计划开始日期(现)" layoutconstraint="md:2;" />
+				<label for="pcid" text="计划完成日期(现)" layoutconstraint="md:2;" />
+				
+				<plaintext name="ljbh" bind="pcxx.ljbh" layoutconstraint="md:2;"/>
+				<plaintext name="pcbh" bind="pcxx.pcbh" layoutconstraint="md:3;"/>
+				<gantt-plaintext name="pcsl" ng-bind="quantity" layoutconstraint="md:2;"/>
+				<gantt-plaintext name="pcjhksrq" ng-bind="minFrom.format('YYYY-MM-DD')" layoutconstraint="md:2;"/>
+				<gantt-plaintext name="pcjhwcrq" ng-bind="maxTo.format('YYYY-MM-DD')" layoutconstraint="md:2;"/>
+				
+			</panel-body>
+		</panel>
+		<panel>
+			<panel-body>
+				<gantt-schedule data="data"
+					   timespans="timespans"
+                       show-side="options.labelsEnabled"
+                       daily="options.daily"
+                       filter-task="{'name': options.filterTask}"
+                       filter-row="{'ck':options.filterRow}"
+                       view-scale="options.scale"
+                       column-width="getColumnWidth(options.width, options.scale, options.zoom)"
+                       auto-expand="options.autoExpand"
+                       task-out-of-range="options.taskOutOfRange"
+                       from-date = "options.fromDate"
+                       to-date = "options.toDate"
+                       allow-side-resizing = "options.allowSideResizing"
+                       task-content = "options.taskContentEnabled ? options.taskContent : undefined"
+                       row-content = "options.rowContentEnabled ? options.rowContent : undefined"
+                       current-date="options.currentDate"
+                       current-date-value="options.currentDateValue"
+                       headers="options.width"
+                       max-height="options.maxHeight"
+                       time-frames="options.timeFrames"
+                       date-frames="options.dateFrames"
+                       time-frames-working-mode="options.timeFramesWorkingMode"
+                       time-frames-non-working-mode="options.timeFramesNonWorkingMode"
+                       time-frames-magnet="options.timeFramesMagnet"
+                       api="options.api"
+                       column-magnet="options.columnMagnet">
+                       <gantt-table enabled="options.sideMode === 'Table' || options.sideMode === 'TreeTable'"
+                                    columns="options.treeTableColumns"
+                                    headers="options.columnsHeaders"
+                                    classes="options.columnsClasses"
+                                    formatters="options.columnsFormatters"
+                                    contents="options.columnsContents"
+                                    header-contents="options.columnsHeaderContents">
+        				</gantt-table>
+                        <gantt-tree enabled="true"
+                                    header-content="options.treeHeaderContent"
+                                    content="options.treeContent"
+                                    keep-ancestor-on-filter-row="true">
+                        </gantt-tree>
+                        <gantt-groups enabled="options.groupDisplayMode === 'group' || options.groupDisplayMode === 'overview' || options.groupDisplayMode === 'promote'" display="options.groupDisplayMode"></gantt-groups>
+                        <gantt-tooltips content="options.tooltip"></gantt-tooltips>
+                        <gantt-movable enabled="options.movable" allow-row-switching="false"></gantt-movable>
+                        <gantt-draw-task
+                            enabled="options.canDraw"
+                            move-threshold="2"
+                            task-factory="options.drawTaskFactory">
+                        </gantt-draw-task>
+                  	</gantt-schedule>
+				</panel-body>
+			</panel>
+			<panel layoutconstraint="md:12;">
+				<panel-body>
+					<gantt-button name="back" label="返回" type="button" context="primary" layoutconstraint="md:1;sm:1;md-offset:5" ng-click="goBack()"></gantt-button>		
+					<gantt-button name="saveSchedule" label="保存" type="button" context="primary" layoutconstraint="md:1;sm:1;" ng-click="save('save')"></gantt-button>
+				</panel-body>
+			</panel>
+	</gantt-app>
+	<attribute name="javascript">
+	<![CDATA[
+		function testOnBlur() {
+
+		}
+		function testOnChange() {
+
+		}
+		function testViewReady() {
+		}
+		function testBtnClick() {
+
+			
+		}
+		function asda() {
+
+		};
+		function shenpi(){
+			
+		}
+	]]>
+	</attribute>
+</view>

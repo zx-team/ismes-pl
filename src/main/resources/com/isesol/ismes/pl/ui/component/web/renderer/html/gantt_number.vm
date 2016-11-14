@@ -1,0 +1,18 @@
+
+#set($value =$runtime.getAttribute("value"))
+#if($runtime.getAttribute("bind"))
+#set($bind = $ui.getBindValue($runtime.getAttribute("bind")))
+#if(!$null.isNull($bind))
+#set($value = $bind)
+#end
+#end
+#if($runtime.getLayoutConstraint().size()>0)
+<div class="bunch #printExtAttr("classes")">
+#end
+#if($runtime.getAttribute("label"))
+<label#printAttr("name","for") class="control-label">#message("label")</label>
+#end
+<input#printAttr("name","id")#printAttr("name","name") #printAttr("ng-model","ng-model") type="text"#if($value) value="$num.format($runtime.getAttribute("format"),"$value")"#end class="form-control#printSizing("input")#printWidth("input")"#printAttrMessage("placeholder","placeholder")#printStr("readonly","readonly")#printStr("disabled","disabled")#printAttr("validate","data-validate") only-digits>
+#if($runtime.getLayoutConstraint().size()>0)
+</div>
+#end

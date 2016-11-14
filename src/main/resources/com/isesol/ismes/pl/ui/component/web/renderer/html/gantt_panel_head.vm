@@ -1,0 +1,9 @@
+
+#if($runtime.getLayoutConstraint().size()>0)<div#printExtAttr("classes","class")>#end
+<div class="panel#printContext("panel")" bs-collapse>
+#if($runtime.getAttribute("heading"))
+	<div class="panel-heading"><a href="" bs-collapse-toggle>$runtime.getAttribute("heading")</a></div>
+#end
+#if($runtime.getAttribute("content"))
+	<div class="panel-body"><p>$runtime.getAttribute("content")</p></div>
+#end
